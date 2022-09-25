@@ -1,3 +1,6 @@
+#my own changes - ignore .vs
+*.vs
+
 # Prerequisites
 *.d
 
