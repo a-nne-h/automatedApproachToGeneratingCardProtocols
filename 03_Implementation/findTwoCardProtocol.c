@@ -321,8 +321,7 @@ struct turnStates {
 /**
  * An integer array with length N.
  */
-struct 
- {
+struct narray {
     unsigned int arr[N];
 };
 
