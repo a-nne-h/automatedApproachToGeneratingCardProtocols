@@ -321,7 +321,8 @@ struct turnStates {
 /**
  * An integer array with length N.
  */
-struct narray {
+struct 
+ {
     unsigned int arr[N];
 };
 
@@ -1131,7 +1132,8 @@ int main() {
         }
         startState.seq[idx].probs.frac[pos].num = inputPoss;
     }
-
+    // important for output possibilistic to set the last entry (11) to 1
+    // change if using other function than AND
     unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
     unsigned int arrIdx = arrSeqIdx[lastStartSeq];
     unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
