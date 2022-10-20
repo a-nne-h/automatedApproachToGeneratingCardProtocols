@@ -1010,9 +1010,11 @@ unsigned int performActions(struct state s) {
             * We can do this, because of the Security and Symmetry assumtions
             */
            // unsigned int stateIdx = nondet_uint();
-           // assume (stateIdx < MAX_TURN_OBSERVATIONS);
-           // assume (possiblePostStates.isUsed[stateIdx]);
-            unsigned int stateIdx = 1;
+      
+           unsigned int stateIdx = 1;
+           assume (stateIdx < MAX_TURN_OBSERVATIONS);
+           assume (possiblePostStates.isUsed[stateIdx]);
+        
             reachableStates[next] = possiblePostStates.states[stateIdx];
             if (!FINITE_RUNTIME) { // Restart-free Las-Vegas.
                 if (isFinalState(reachableStates[next])) {
