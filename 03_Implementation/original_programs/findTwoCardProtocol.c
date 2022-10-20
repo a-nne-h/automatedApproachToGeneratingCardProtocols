@@ -1004,11 +1004,6 @@ unsigned int performActions(struct state s) {
              */
             struct turnStates possiblePostStates = applyTurn(reachableStates[i]);
 
-            /**
-            * TODO 
-            * We decide on one branch to look at further. 
-            * We can do this, because of the Security and Symmetry assumtions
-            */
             unsigned int stateIdx = nondet_uint();
             assume (stateIdx < MAX_TURN_OBSERVATIONS);
             assume (possiblePostStates.isUsed[stateIdx]);
