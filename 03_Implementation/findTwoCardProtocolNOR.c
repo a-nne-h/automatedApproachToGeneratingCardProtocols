@@ -1132,7 +1132,7 @@ int main() {
             pos = i;
         } else {
             // Assign every sequence to their output result.
-            inputPoss = !(isOneOne(start[i].arr) || isZeroZero(start[i].arr));
+            inputPoss = (isOneOne(start[i].arr) || isZeroZero(start[i].arr));
         }
         startState.seq[idx].probs.frac[pos].num = inputPoss;
     }
@@ -1140,8 +1140,8 @@ int main() {
     if (WEAK_SECURITY == 2) {
         unsigned int arrIdxZeroOne = arrSeqIdx[lastStartSeq];
         unsigned int arrIdxOneZero = arrSeqIdx[lastStartSeq];
-        startState.seq[arrIdxZeroOne].probs.frac[1].num = isOneOne(start[1].arr);
-        startState.seq[arrIdxOneZero].probs.frac[1].num = isOneOne(start[2].arr);
+        startState.seq[arrIdxZeroOne].probs.frac[1].num = isZeroOne(start[1].arr);
+        startState.seq[arrIdxOneZero].probs.frac[1].num = isOneZero(start[2].arr);
     }
     // important for output possibilistic to set the last entry (11) to 1
     // change if using other function than AND

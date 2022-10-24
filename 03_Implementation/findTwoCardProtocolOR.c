@@ -1139,12 +1139,12 @@ int main() {
         startState.seq[idx].probs.frac[pos].num = inputPoss;
     }
     
-    if (WEAK_SECURITY == 1) { // to be safe, although I think it should work without
+    if (WEAK_SECURITY == 2) { // to be safe, although I think it should work without
         // assign [00] the output possibility 1  
         //unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
         unsigned int arrIdx = arrSeqIdx[0];
         //unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
-        startState.seq[arrIdx].probs.frac[0].num = isOneOne(start[0].arr);
+        startState.seq[arrIdx].probs.frac[0].num = isZeroZero(start[0].arr);
     }
     // Store all possible Permutations
     stateWithAllPermutations = getStateWithAllPermutations();
