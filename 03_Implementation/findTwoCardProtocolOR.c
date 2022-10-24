@@ -606,8 +606,10 @@ unsigned int isFinalState(struct state s) {
         unsigned int done = 0;
         for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
             if (!done && isStillPossible(s.seq[i].probs)) {
-                // IF XOR, SOMETHING LIKE THIS: 2 || 3
-                unsigned int deciding = s.seq[i].probs.frac[NUMBER_PROBABILITIES - 1].num;
+
+                // changed (from s.seq[i].probs.frac[NUMBER_PROBABILITIES - 1].num;) so that all states apart from [00] are deciding
+                // is that possible, because it is an int !?
+                unsigned int deciding = !(s.seq[i].probs.frac[0].num);
                 unsigned int first = s.seq[i].val[a];
                 unsigned int second = s.seq[i].val[b];
                 assume (first != second);
