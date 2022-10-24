@@ -1132,16 +1132,23 @@ int main() {
             pos = i;
         } else {
             // Assign every sequence to their output result.
-            inputPoss = !isOneOne(start[i].arr);
+            inputPoss = !(isOneOne(start[i].arr) || isZeroZero(start[i].arr));
         }
         startState.seq[idx].probs.frac[pos].num = inputPoss;
     }
+
+    if (WEAK_SECURITY == 2) {
+        unsigned int arrIdxZeroOne = arrSeqIdx[lastStartSeq];
+        unsigned int arrIdxOneZero = arrSeqIdx[lastStartSeq];
+        startState.seq[arrIdxZeroOne].probs.frac[1].num = isOneOne(start[1].arr);
+        startState.seq[arrIdxOneZero].probs.frac[1].num = isOneOne(start[2].arr);
+    }
     // important for output possibilistic to set the last entry (11) to 1
     // change if using other function than AND
-    unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
-    unsigned int arrIdx = arrSeqIdx[lastStartSeq];
-    unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
-    startState.seq[arrIdx].probs.frac[lastProbIdx].num = isOneOne(start[lastStartSeq].arr);
+    //unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
+    //unsigned int arrIdx = arrSeqIdx[lastStartSeq];
+    //unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
+    
 
     // Store all possible Permutations
     stateWithAllPermutations = getStateWithAllPermutations();
