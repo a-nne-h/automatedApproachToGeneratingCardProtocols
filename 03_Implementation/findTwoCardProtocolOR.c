@@ -1125,24 +1125,25 @@ int main() {
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
         unsigned int idx = arrSeqIdx[i];
         unsigned int inputPoss = 0;
-        unsigned int pos = 0;
+        unsigned int pos = 1; // changed from 0 (AND) so that in else, in every sequence that is not [00], X_1 = 1
         if (WEAK_SECURITY != 2) { // We differentiate the output (i.e., NOT output possibilistic)
             // Assign every sequence to their input possibility.
             inputPoss = inputProbability(i, start[i].arr);
             pos = i;
         } else {
-            // Assign every sequence to their output result.
-            inputPoss = !isOneOne(start[i].arr);
+            // Assign every sequence that is not [00] to their output result.
+            inputPoss = !isZeroZero(start[i].arr);
         }
         startState.seq[idx].probs.frac[pos].num = inputPoss;
     }
-    // important for output possibilistic to set the last entry (11) to 1
-    // change if using other function than AND
-    unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
-    unsigned int arrIdx = arrSeqIdx[lastStartSeq];
-    unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
-    startState.seq[arrIdx].probs.frac[lastProbIdx].num = isOneOne(start[lastStartSeq].arr);
-
+    
+    if (WEAK_SECURITY == 1) { // to be safe, although I think it should work without
+        // assign [00] the output possibility 1  
+        //unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
+        unsigned int arrIdx = arrSeqIdx[0];
+        //unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
+        startState.seq[arrIdx].probs.frac[0].num = isOneOne(start[0].arr);
+    }
     // Store all possible Permutations
     stateWithAllPermutations = getStateWithAllPermutations();
 
