@@ -1138,8 +1138,8 @@ int main() {
     }
 
     if (WEAK_SECURITY == 2) {
-        unsigned int arrIdxZeroOne = arrSeqIdx[lastStartSeq];
-        unsigned int arrIdxOneZero = arrSeqIdx[lastStartSeq];
+        unsigned int arrIdxZeroOne = arrSeqIdx[1];
+        unsigned int arrIdxOneZero = arrSeqIdx[2];
         startState.seq[arrIdxZeroOne].probs.frac[1].num = isZeroOne(start[1].arr);
         startState.seq[arrIdxOneZero].probs.frac[1].num = isOneZero(start[2].arr);
     }
