@@ -534,7 +534,7 @@ unsigned int isBottom(struct fractions probs) {
     if (WEAK_SECURITY == 2) {
         bottom = probs.frac[0].num && probs.frac[1].num;
     } else {
-        bottom = (probs.frac[0].num || probs.frac[1].num || probs.frac[2].num) && probs.frac[3].num;
+        bottom = (probs.frac[1].num || probs.frac[2].num || probs.frac[3].num) && probs.frac[0].num;
     }
     return bottom;
 }

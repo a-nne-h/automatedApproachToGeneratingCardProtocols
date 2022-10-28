@@ -527,6 +527,7 @@ struct narray combinePermutations(struct narray firstPermutation,
 
 /**
  * Check if the sequence is a bottom sequence (belongs to more than one possible output).
+ * Alter WEAK_SECURITY != 2 for different fuctions than AND
  */
 unsigned int isBottom(struct fractions probs) {
     unsigned int bottom = 0;
@@ -534,7 +535,7 @@ unsigned int isBottom(struct fractions probs) {
     if (WEAK_SECURITY == 2) {
         bottom = probs.frac[0].num && probs.frac[1].num;
     } else {
-        bottom = (probs.frac[0].num || probs.frac[1].num || probs.frac[2].num) && probs.frac[3].num;
+        bottom = (probs.frac[0].num || probs.frac[3].num) && (probs.frac[1].num || probs.frac[2].num);
     }
     return bottom;
 }
