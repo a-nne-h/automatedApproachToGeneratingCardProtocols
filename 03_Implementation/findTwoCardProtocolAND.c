@@ -1004,10 +1004,10 @@ unsigned int performActions(struct state s) {
              */
             struct turnStates possiblePostStates = applyTurn(reachableStates[i]);
 
-            /**
-            * TODO 
+            /** 
             * We decide on one branch to look at further. 
-            * We can do this, because of the Security and Symmetry assumtions
+            * This isn't tecnically sufficient, but we can infer the resulting protocol 
+            * from the trace that the program gives us for one branch
             */
             unsigned int stateIdx = nondet_uint();
             assume (stateIdx < MAX_TURN_OBSERVATIONS);
