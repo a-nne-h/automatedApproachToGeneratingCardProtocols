@@ -50,9 +50,12 @@ void __CPROVER_assert(int x, char y[]);
 /**
 * COPY:
 * for  COPY we need a 2 cards commitment not 4
+* Does 'cards used for commitments' mean input commitment? -> then 2 
+*   -> it is 2 for getStartSequens
+* if it means the output commitments as well -> then 4
 */
 #ifndef COMMIT
-#define COMMIT 4
+#define COMMIT 2
 #endif
 
 /**
@@ -118,7 +121,7 @@ void __CPROVER_assert(int x, char y[]);
 * for COPY we have 2 start sequences 1 and 0
 */
 #ifndef NUMBER_START_SEQS
-#define NUMBER_START_SEQS 4
+#define NUMBER_START_SEQS 2
 #endif
 
 /**
@@ -453,7 +456,11 @@ struct narray getStartSequence() {
     }
     // Here we assume that each player only uses fully distinguishable cards
     assume (res.arr[1] != res.arr[0]);
-    assume (res.arr[3] != res.arr[2]);
+    /**
+    * COPY:
+    * there is no second commitment
+    */
+    //assume (res.arr[3] != res.arr[2]);
     for (unsigned int i = COMMIT; i < N; i++) {
         res.arr[i] = nondet_uint();
         assume (0 < res.arr[i]);
@@ -551,12 +558,18 @@ struct narray combinePermutations(struct narray firstPermutation,
      * Here we need to change the WEAK_SECURITY != 2 part
      */
     unsigned int bottom = 0;
-
-    if (WEAK_SECURITY == 2) {
+    /**
+    * COPY:
+    * we only have the probabilities/possibilities:
+    * X_0 if the input was a 0 (the output will also be a 0)
+    * X_1 if the input was a 1
+    * if both are != 0 then we have a bottom sequence
+    */
+    //if (WEAK_SECURITY == 2) {
         bottom = probs.frac[0].num && probs.frac[1].num;
-    } else {
-        bottom = (probs.frac[0].num || probs.frac[1].num || probs.frac[2].num) && probs.frac[3].num;
-    }
+    //} else {
+    //    bottom = (probs.frac[0].num || probs.frac[1].num || probs.frac[2].num) && probs.frac[3].num;
+    //}
     return bottom;
 }
 
@@ -1162,30 +1175,31 @@ int main() {
         arrSeqIdx[i] = getSequenceIndexFromArray(start[i], startState);
     }
 
+
     /**
     * COPY:
-    * the first if query is sufficient for al security types becaus X_0 and X_1 are all there is.
+    * the first if query is sufficient for all security types becaus X_0 and X_1 are all there is.
     */
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
         unsigned int idx = arrSeqIdx[i];
         unsigned int inputPoss = 0;
         unsigned int pos = 0;
-        if (WEAK_SECURITY != 2) { // We differentiate the output (i.e., NOT output possibilistic)
+        //if (WEAK_SECURITY != 2) { // We differentiate the output (i.e., NOT output possibilistic)
             // Assign every sequence to their input possibility.
             inputPoss = inputProbability(i, start[i].arr);
             pos = i;
-        } else {
+        //} else {
             // Assign every sequence to their output result.
-            inputPoss = !isOneOne(start[i].arr);
-        }
+        //    inputPoss = !isOneOne(start[i].arr);
+       // }
         startState.seq[idx].probs.frac[pos].num = inputPoss;
     }
     // important for output possibilistic to set the last entry (11) to 1
     // change if using other function than AND
-    unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
-    unsigned int arrIdx = arrSeqIdx[lastStartSeq];
-    unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
-    startState.seq[arrIdx].probs.frac[lastProbIdx].num = isOneOne(start[lastStartSeq].arr);
+    //unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
+    //unsigned int arrIdx = arrSeqIdx[lastStartSeq];
+    //unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
+    //startState.seq[arrIdx].probs.frac[lastProbIdx].num = isOneOne(start[lastStartSeq].arr);
 
     // Store all possible Permutations
     stateWithAllPermutations = getStateWithAllPermutations();
