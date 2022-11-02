@@ -22,13 +22,13 @@ TIMESTAMP="# Timestamp: "$START
 CBMC='./cbmc'
 FILE="findTwoCardProtocolAND.c"
 HOST=`echo -e $(hostname)`
-OUTFILE="twoCardProtocol_"$HOST"_"$START_PRINT".out"
 TRACE_OPTS='--compact-trace --trace-hex'
 TIMEOUT="5d"
 N=$1
 LENGTH=$2
 OPT=$3
 NUM_SYM='2' # This is the setting where all cards carry only two distinct symbols
+OUTFILE="twoCardProtocolAND_n"$N"_l"$LENGTH"__"$HOST"_"$START_PRINT".out"
 
 OPTS=''
 while [ -n "$3" ]
