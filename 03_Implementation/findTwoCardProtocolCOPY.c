@@ -51,7 +51,7 @@ void __CPROVER_assert(int x, char y[]);
 * COPY:
 * for  COPY we need a 2 cards commitment not 4
 * Does 'cards used for commitments' mean input commitment? -> then 2 
-*   -> it is 2 for getStartSequens
+*   -> it is 2 for getStartSequence
 * if it means the output commitments as well -> then 4
 */
 #ifndef COMMIT
@@ -643,14 +643,33 @@ unsigned int isFinalState(struct state s) {
         unsigned int lowerCard = 0;
         unsigned int higherCard = 0;
 
+        /**
+        * COPY:
+        */ 
+        unsigned int c = nondet_uint(); // Index of the first card.
+        unsigned int d = nondet_uint(); // Index of the second card.
+
+        assume(c < N&& d < N&& c != d);
+        assume(a != c && a != d);
+        assume(b != c && b != d);
+        //%unsigned int lowerCard2 = 0;
+        //unsigned int higherCard2 = 0;
+
         unsigned int done = 0;
         for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
             if (!done && isStillPossible(s.seq[i].probs)) {
-                // IF XOR, SOMETHING LIKE THIS: 2 || 3
+                /**
+                * COPY:
+                * deciding can stay this way
+                */ 
                 unsigned int deciding = s.seq[i].probs.frac[NUMBER_PROBABILITIES - 1].num;
                 unsigned int first = s.seq[i].val[a];
                 unsigned int second = s.seq[i].val[b];
-                assume (first != second);
+                unsigned int third = s.seq[i].val[c];
+                unsigned int fourth = s.seq[i].val[d];
+                assume (first != second && third != fourth);
+                assume(first == third);
+                assume(second == fourth);
                 if (!higherCard && !lowerCard) {
                     // In a 1-sequence, the first card is higher, otherwise the second one.
                     higherCard = deciding ? first : second;
@@ -1134,13 +1153,13 @@ unsigned int inputProbability(unsigned int start,
     assume (start < NUMBER_START_SEQS);
     unsigned int res = 0;
     if (start == 0) {
-        res = isZeroZero(arr);
+        res = isZero(arr[0],arr[1];
     } else if (start == 1) {
-        res = isZeroOne(arr);
-    } else if (start == 2) {
-        res = isOneZero(arr);
-    } else if (start == 3) {
-        res = isOneOne(arr);
+        res = isOne(arr[0],arr[1]);
+    //} else if (start == 2) {
+    //    res = isOneZero(arr);
+    //} else if (start == 3) {
+    //    res = isOneOne(arr);
     }
     return res;
 }
@@ -1159,16 +1178,17 @@ int main() {
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
         start[i] = getStartSequence();
     }
-    assume (isZeroZero(start[0].arr));
+    assume (isZero(start[0].arr[0], start[0].arr[1]));
+    assume (NUMBER_START_SEQS == 2);
+    assume (isOne(start[1].arr[0], start[1].arr[1]));
+    //assume (NUMBER_START_SEQS == 4);
+    //assume (start[0].arr[0] == start[1].arr[0]);
+    //assume (start[1].arr[0] != start[2].arr[0]);
+    //assume (start[2].arr[0] == start[3].arr[0]);
 
-    assume (NUMBER_START_SEQS == 4);
-    assume (start[0].arr[0] == start[1].arr[0]);
-    assume (start[1].arr[0] != start[2].arr[0]);
-    assume (start[2].arr[0] == start[3].arr[0]);
-
-    assume (start[0].arr[2] == start[2].arr[2]);
-    assume (start[0].arr[2] != start[1].arr[2]);
-    assume (start[1].arr[2] == start[3].arr[2]);
+    //assume (start[0].arr[2] == start[2].arr[2]);
+    //assume (start[0].arr[2] != start[1].arr[2]);
+    //assume (start[1].arr[2] == start[3].arr[2]);
 
     unsigned int arrSeqIdx[NUMBER_START_SEQS];
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
