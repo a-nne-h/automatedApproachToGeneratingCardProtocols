@@ -1153,7 +1153,7 @@ unsigned int inputProbability(unsigned int start,
     assume (start < NUMBER_START_SEQS);
     unsigned int res = 0;
     if (start == 0) {
-        res = isZero(arr[0],arr[1];
+        res = isZero(arr[0],arr[1]);
     } else if (start == 1) {
         res = isOne(arr[0],arr[1]);
     //} else if (start == 2) {
