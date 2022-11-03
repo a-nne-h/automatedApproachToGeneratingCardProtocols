@@ -1181,6 +1181,9 @@ int main() {
     assume (isZero(start[0].arr[0], start[0].arr[1]));
     assume (NUMBER_START_SEQS == 2);
     assume (isOne(start[1].arr[0], start[1].arr[1]));
+    for (unsigned int i = 2; i < N; i++) {
+        assume (start[1].arr[i] == start[1].arr[i]);
+    }
     //assume (NUMBER_START_SEQS == 4);
     //assume (start[0].arr[0] == start[1].arr[0]);
     //assume (start[1].arr[0] != start[2].arr[0]);
