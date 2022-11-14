@@ -20,15 +20,15 @@ START_PRINT=`echo -e "$START" | sed -e 's/\s/\_/g' | sed -e 's/\-/\_/g' | sed -e
 START_SEC=$(date +%s)
 TIMESTAMP="# Timestamp: "$START
 CBMC='./cbmc'
-FILE="findTwoCardProtocol.c"
+FILE="findTwoCardProtocolADDER.c"
 HOST=`echo -e $(hostname)`
-OUTFILE="twoCardProtocol_"$HOST"_"$START_PRINT".out"
 TRACE_OPTS='--compact-trace --trace-hex'
 TIMEOUT="5d"
 N=$1
 LENGTH=$2
 OPT=$3
 NUM_SYM='2' # This is the setting where all cards carry only two distinct symbols
+OUTFILE="twoCardProtocolAND_n"$N"_l"$LENGTH"__"$HOST"_"$START_PRINT".out"
 
 OPTS=''
 while [ -n "$3" ]
@@ -107,6 +107,7 @@ then
     exit
 fi
 
+
 fact ()
 {
   local number=$1
@@ -120,7 +121,6 @@ fact ()
     fact $decrnum  # Recursive function call (the function calls itself).
     let "factorial = $number * $?"
   fi
-
   return $factorial
 }
 
@@ -129,7 +129,7 @@ NOM='0'
 DENOM='1'
 VAL=$[$N / $NUM_SYM]
 fact $VAL
-FOO=$?
+FOO=$factorial
 BOUND=$[$NUM_SYM - 1]
 
 for i in $(eval echo "{1..$BOUND}")
@@ -140,11 +140,11 @@ done
 
 REST=$[$N - $NOM]
 fact $REST
-FOO=$?
+FOO=$factorial
 DENOM=$[$DENOM * $FOO]
 
 fact $N
-FOO=$?
+FOO=$factorial
 
 POS_SEQ=$[$FOO / $DENOM]
 POS_SEQ_STRING="NUMBER_POSSIBLE_SEQUENCES"
@@ -190,7 +190,7 @@ fi
 
 echo -e '\n'"############################################################" 2>&1 | tee $OUTFILE
 echo -e $TIMESTAMP'\n'$VERSION$OPTIONS 2>&1 | tee -a $OUTFILE
-echo -e "# N = "$N", NUM_SYM = "$NUM_SYM", L = "$LENGTH", TIMEOUT = "$TIMEOUT 2>&1 | tee -a $OUTFILE
+echo -e "# N = "$N", NUM_SYM = "$NUM_SYM", L = "$LENGTH", NUMBER_POSSIBLE_PERMUTATIONS = "$POS_PERM", NUMBER_POSSIBLE_SEQUENCES = "$POS_SEQ" TIMEOUT = "$TIMEOUT 2>&1 | tee -a $OUTFILE
 echo -e "############################################################" 2>&1 | tee -a $OUTFILE
 echo -e '\n'"############################################################"'\n' 2>&1 | tee -a $OUTFILE
 timeout $TIMEOUT $CBMC $TRACE_OPTS -D L=$LENGTH -D N=$N -D NUM_SYM=$NUM_SYM -D $POS_SEQ_STRING=$POS_SEQ -D $POS_PERM_STRING=$POS_PERM -D PERM_SET_SIZE=$PERM_SET_SIZE -D NUMBER_SUBGROUP_SIZES=$NUMBER_SUBGROUP_SIZES $SUBGROUP_SIZES $FILE $OPT 2>&1 | tee -a $OUTFILE

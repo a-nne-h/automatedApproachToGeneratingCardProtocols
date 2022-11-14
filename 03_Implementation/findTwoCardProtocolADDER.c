@@ -27,6 +27,9 @@ void __CPROVER_assert(int x, char y[]);
 /**
  * Size of input sequence (number of cards including both commitments plus additional cards).
  */
+/**
+* ADDER: minimum 4 for input and output respectively
+*/
 #ifndef N
 #define N 4
 #endif
@@ -42,6 +45,9 @@ void __CPROVER_assert(int x, char y[]);
 /**
  * Number of all cards used for commitments
  */
+/**
+* ADDER: Stays 4
+*/
 #ifndef COMMIT
 #define COMMIT 4
 #endif
@@ -93,8 +99,11 @@ void __CPROVER_assert(int x, char y[]);
  * This variable is used for over-approximating loops such that
  * their unrolling bound can be statically determined.
  */
+/**
+* ADDER: IMPORTANT, we have three possible outputs we need to distinguish
+*/
 #if WEAK_SECURITY == 2
-    #define NUMBER_PROBABILITIES 2
+    #define NUMBER_PROBABILITIES 3
 #else
     #define NUMBER_PROBABILITIES 4
 #endif
@@ -104,6 +113,9 @@ void __CPROVER_assert(int x, char y[]);
  * there are four different possibilities how the protocol could start.
  * For more players or other scenarios this value has to be adapted.
  */
+/**
+* ADDER: stays 4 bec. aöso 2 players
+*/
 #ifndef NUMBER_START_SEQS
 #define NUMBER_START_SEQS 4
 #endif
@@ -516,6 +528,7 @@ struct permutationState getStateWithAllPermutations() {
  * Calculates the resulting permutation when we first apply firstPermutation to a sequence, and
  * subsequently we apply secondPermutation (secondPermutation ° firstPermutation).
  */
+
 struct narray combinePermutations(struct narray firstPermutation,
                                   struct narray secondPermutation) {
      struct narray result = { .arr = { 0 } };
@@ -528,13 +541,18 @@ struct narray combinePermutations(struct narray firstPermutation,
 /**
  * Check if the sequence is a bottom sequence (belongs to more than one possible output).
  */
+ /**
+ * ADDER: changed WEAK_SECURITY==2 as well as not WEAK_SECURITY==2 parts.
+ * WEAK_SECURITY ==2: 
+ * WEAK SECURITY !=2: X_00; X_01=X_10; X_11 have different results
+ */
 unsigned int isBottom(struct fractions probs) {
     unsigned int bottom = 0;
 
     if (WEAK_SECURITY == 2) {
-        bottom = probs.frac[0].num && probs.frac[1].num;
+        bottom = (probs.frac[0].num && probs.frac[1].num) || (probs.frac[1].num && probs.frac[2].num) || (probs.frac[2].num && probs.frac[0].num);
     } else {
-        bottom = (probs.frac[0].num || probs.frac[1].num || probs.frac[2].num) && probs.frac[3].num;
+        bottom =  ((probs.frac[1].num  || probs.frac[2].num) && (probs.frac[0].num|| probs.frac[1].num)) || (probs.frac[0].num && probs.frac[1].num);
     }
     return bottom;
 }
@@ -586,6 +604,9 @@ unsigned int isValid(struct state s) {
 /**
  * Checks whether the state contains two columns that encode a valid result bit.
  */
+/**
+* ADDER: alter heavily, we need three states instead of deciding vs. not deciding 
+*/
 unsigned int isFinalState(struct state s) {
     unsigned int res = 0;
 
@@ -1004,10 +1025,10 @@ unsigned int performActions(struct state s) {
              */
             struct turnStates possiblePostStates = applyTurn(reachableStates[i]);
 
-            /**
-            * TODO 
+            /** 
             * We decide on one branch to look at further. 
-            * We can do this, because of the Security and Symmetry assumtions
+            * This isn't tecnically sufficient, but we can infer the resulting protocol 
+            * from the trace that the program gives us for one branch
             */
             unsigned int stateIdx = nondet_uint();
             assume (stateIdx < MAX_TURN_OBSERVATIONS);
@@ -1080,6 +1101,9 @@ unsigned int isOneOne(unsigned int arr[N]) {
 /**
  * Returns if the given sequnce is a input sequence in the start state.
  */
+/**
+* ADDER: stays the same for COPY, because the input remains the same
+*/
 unsigned int inputProbability(unsigned int start,
                               unsigned int arr[N]) {
     assume (start < NUMBER_START_SEQS);
@@ -1101,6 +1125,9 @@ int main() {
     emptyState = getEmptyState();
     struct state startState = emptyState;
 
+    /**
+    * ADDER: the start sequence remains the same
+    */
     // We generate the start sequences.
     struct narray start[NUMBER_START_SEQS];
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
@@ -1121,7 +1148,9 @@ int main() {
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
         arrSeqIdx[i] = getSequenceIndexFromArray(start[i], startState);
     }
-
+    /**
+    * ADDER: change the weak_security == 2 part here 
+    */
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
         unsigned int idx = arrSeqIdx[i];
         unsigned int inputPoss = 0;
