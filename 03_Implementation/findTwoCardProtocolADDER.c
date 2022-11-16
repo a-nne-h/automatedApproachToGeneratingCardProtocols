@@ -617,37 +617,81 @@ unsigned int isFinalState(struct state s) {
          * (they need to have only two symbols, as otherwise we may be able to get information
          * from the output basis of the result bit).
          */
-        unsigned int a = nondet_uint(); // Index of the first card.
-        unsigned int b = nondet_uint(); // Index of the second card.
+        unsigned int a = nondet_uint(); // Index of the first card -> sum
+        unsigned int b = nondet_uint(); // Index of the second card -> sum
+
+        unsigned int c = nondet_uint(); // Index of the third card -> carry
+        unsigned int d = nondet_uint(); // Index of the fourth card -> carry
 
         assume (a < N && b < N && a != b);
-        unsigned int lowerCard = 0;
-        unsigned int higherCard = 0;
+        assume (c < N && d < N && c != d);
+        assume (a != c && a != d && b != c && b != d);
 
-        unsigned int done = 0;
+        //SUM (XOR)
+        unsigned int lowerCardSum = 0;
+        unsigned int higherCardSum = 0;
+
+        unsigned int doneSum = 0;
         for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
-            if (!done && isStillPossible(s.seq[i].probs)) {
+            if (!doneSum && isStillPossible(s.seq[i].probs)) {
                 // IF XOR, SOMETHING LIKE THIS: 2 || 3
-                unsigned int deciding = s.seq[i].probs.frac[NUMBER_PROBABILITIES - 1].num;
-                unsigned int first = s.seq[i].val[a];
-                unsigned int second = s.seq[i].val[b];
-                assume (first != second);
-                if (!higherCard && !lowerCard) {
+               // changed (from s.seq[i].probs.frac[NUMBER_PROBABILITIES - 1].num;) so that statese [01] and [10] ar deciding
+                unsigned int decidingSum = (s.seq[i].probs.frac[1].num) || (s.seq[i].probs.frac[2].num);
+                unsigned int firstSum = s.seq[i].val[a];
+                unsigned int secondSum = s.seq[i].val[b];
+                assume (firstSum != secondSum);
+                if (!higherCardSum && !lowerCardSum) {
                     // In a 1-sequence, the first card is higher, otherwise the second one.
-                    higherCard = deciding ? first : second;
-                    lowerCard = deciding ? second : first;
+                    higherCardSum = decidingSum ? firstSum : secondSum;
+                    lowerCardSum = decidingSum ? secondSum : firstSum;
                 } else {
                     /**
                      * Check whether for each 1-sequence, there is first the higher card AND
                      * for each 0-sequence, there is first the lower card. Also check whether
                      * there are only two cards used as output basis in this state.
                      */
-                    if (   (deciding
-                            && !(   first == higherCard
-                                 && second == lowerCard))
-                        || (!deciding
-                            && !(   second == higherCard
-                                 && first == lowerCard))) {
+                    if (   (decidingSum
+                            && !(   firstSum == higherCardSum
+                                 && secondSum == lowerCardSum))
+                        || (!decidingSum
+                            && !(   secondSum == higherCardSum
+                                 && firstSum == lowerCardSum))) {
+                        doneSum = 1;
+                        res = 0;
+                    }
+                }
+            }
+        }
+
+        //CARRY (AND)
+        unsigned int lowerCardCarry = 0;
+        unsigned int higherCardCarry = 0;
+
+        unsigned int done = 0;
+        for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+            if (!done && isStillPossible(s.seq[i].probs)) {
+                // IF XOR, SOMETHING LIKE THIS: 2 || 3
+                unsigned int decidingCarry = s.seq[i].probs.frac[NUMBER_PROBABILITIES - 1].num;
+                unsigned int firstCarry = s.seq[i].val[a];
+                unsigned int secondCarry = s.seq[i].val[b];
+                assume(firstCarry != secondCarry);
+                if (!higherCardCarry && !lowerCardCarry) {
+                    // In a 1-sequence, the first card is higher, otherwise the second one.
+                    higherCardCarry = decidingCarry ? firstCarry : secondCarry;
+                    lowerCardCarry = decidingCarry ? secondCarry : firstCarry;
+                }
+                else {
+                    /**
+                     * Check whether for each 1-sequence, there is first the higher card AND
+                     * for each 0-sequence, there is first the lower card. Also check whether
+                     * there are only two cards used as output basis in this state.
+                     */
+                    if ((decidingCarry
+                        && !(firstCarry == higherCardCarry
+                            && secondCarry == lowerCardCarry))
+                        || (!decidingCarry
+                            && !(secondCarry == higherCardCarry
+                                && firstCarry == lowerCardCarry))) {
                         done = 1;
                         res = 0;
                     }
