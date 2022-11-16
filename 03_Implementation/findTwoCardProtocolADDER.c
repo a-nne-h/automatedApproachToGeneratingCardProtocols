@@ -542,8 +542,8 @@ struct narray combinePermutations(struct narray firstPermutation,
  * Check if the sequence is a bottom sequence (belongs to more than one possible output).
  */
  /**
- * ADDER: changed WEAK_SECURITY==2 as well as not WEAK_SECURITY==2 parts.
- * WEAK_SECURITY ==2: 
+ * ADDER: changed WEAK_SECURITY==2 as well as WEAK_SECURITY!=2 parts.
+ * WEAK_SECURITY ==2: X_00, X_01, X_10 have all different results
  * WEAK SECURITY !=2: X_00; X_01=X_10; X_11 have different results
  */
 unsigned int isBottom(struct fractions probs) {
@@ -1159,18 +1159,33 @@ int main() {
             // Assign every sequence to their input possibility.
             inputPoss = inputProbability(i, start[i].arr);
             pos = i;
-        } else {
-            // Assign every sequence to their output result.
-            inputPoss = !isOneOne(start[i].arr);
         }
         startState.seq[idx].probs.frac[pos].num = inputPoss;
     }
     // important for output possibilistic to set the last entry (11) to 1
     // change if using other function than AND
-    unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
-    unsigned int arrIdx = arrSeqIdx[lastStartSeq];
-    unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
-    startState.seq[arrIdx].probs.frac[lastProbIdx].num = isOneOne(start[lastStartSeq].arr);
+    
+    if (WEAK_SECURITY == 2) {
+        unsigned int StartSeq0 = 0;
+        unsigned int arrIdx0 = arrSeqIdx[StartSeq0];
+        unsigned int ProbIdx0 = 0;
+        startState.seq[arrIdx0].probs.frac[ProbIdx0].num = isZeroZero(start[StartSeq0].arr);
+
+        unsigned int StartSeq1 = 1;
+        unsigned int arrIdx1 = arrSeqIdx[StartSeq1];
+        unsigned int ProbIdx1 = 1;
+        startState.seq[arrIdx1].probs.frac[ProbIdx1].num = isZeroOne(start[StartSeq1].arr);
+
+        unsigned int StartSeq2 = 2;
+        unsigned int arrIdx2 = arrSeqIdx[StartSeq2];
+        unsigned int ProbIdx2 = 1;
+        startState.seq[arrIdx2].probs.frac[ProbIdx2].num = isOneZero(start[StartSeq2].arr);
+
+        unsigned int StartSeq3 = NUMBER_START_SEQS - 1;
+        unsigned int arrIdx3 = arrSeqIdx[StartSeq3];
+        unsigned int ProbIdx3 = NUMBER_PROBABILITIES - 1;
+        startState.seq[arrIdx3].probs.frac[ProbIdx3].num = isOneOne(start[StartSeq3].arr);
+    }
 
     // Store all possible Permutations
     stateWithAllPermutations = getStateWithAllPermutations();
