@@ -28,7 +28,7 @@ N=$1
 LENGTH=$2
 OPT=$3
 NUM_SYM='2' # This is the setting where all cards carry only two distinct symbols
-OUTFILE="twoCardProtocolAND_n"$N"_l"$LENGTH"__"$HOST"_"$START_PRINT".out"
+OUTFILE="twoCardProtocolADDER_NO_MOD_n"$N"_l"$LENGTH"__"$HOST"_"$START_PRINT".out"
 
 OPTS=''
 while [ -n "$3" ]
