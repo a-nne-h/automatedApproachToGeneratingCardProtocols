@@ -617,9 +617,10 @@ unsigned int isFinalState(struct state s) {
          * (they need to have only two symbols, as otherwise we may be able to get information
          * from the output basis of the result bit).
          */
+        //SUM
         unsigned int a = nondet_uint(); // Index of the first card -> sum
         unsigned int b = nondet_uint(); // Index of the second card -> sum
-
+        //Carry
         unsigned int c = nondet_uint(); // Index of the third card -> carry
         unsigned int d = nondet_uint(); // Index of the fourth card -> carry
 
@@ -672,8 +673,8 @@ unsigned int isFinalState(struct state s) {
             if (!done && isStillPossible(s.seq[i].probs)) {
                 // IF XOR, SOMETHING LIKE THIS: 2 || 3
                 unsigned int decidingCarry = s.seq[i].probs.frac[NUMBER_PROBABILITIES - 1].num;
-                unsigned int firstCarry = s.seq[i].val[a];
-                unsigned int secondCarry = s.seq[i].val[b];
+                unsigned int firstCarry = s.seq[i].val[c];
+                unsigned int secondCarry = s.seq[i].val[d];
                 assume(firstCarry != secondCarry);
                 if (!higherCardCarry && !lowerCardCarry) {
                     // In a 1-sequence, the first card is higher, otherwise the second one.
