@@ -637,7 +637,12 @@ unsigned int isFinalState(struct state s) {
             if (!doneSum && isStillPossible(s.seq[i].probs)) {
                 // IF XOR, SOMETHING LIKE THIS: 2 || 3
                // changed (from s.seq[i].probs.frac[NUMBER_PROBABILITIES - 1].num;) so that statese [01] and [10] ar deciding
-                unsigned int decidingSum = (s.seq[i].probs.frac[1].num) || (s.seq[i].probs.frac[2].num);
+                if (WEAK_SECURIT == 2) {
+                    unsigned int decidingSum = (s.seq[i].probs.frac[1].num);
+                }
+                else {
+                    unsigned int decidingSum = (s.seq[i].probs.frac[1].num) || (s.seq[i].probs.frac[2].num);
+                }
                 unsigned int firstSum = s.seq[i].val[a];
                 unsigned int secondSum = s.seq[i].val[b];
                 assume (firstSum != secondSum);
