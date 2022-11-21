@@ -1137,6 +1137,40 @@ struct turnStates applyTurn(struct state s) {
     return result;
 }
 
+struct turnStates applyFrAnd(struct state s) {
+    // ATTENTION: we need a new state that is similar but not the same to turnStates, 
+    // because the TurnStates have the size of POSSIBLE_OBSERVATION
+    // ATTENTION: do we differentiate for output possibilistic Security and the rest?
+
+    // pick 4 cards that represent the two commitments
+    unsigned int com1A = nondet_uint();
+    unsigned int com1B = nondet_uint();
+    unsigned int com2A = nondet_uint();
+    unsigned int com2B = nondet_uint();
+    assume(com1A < N && com1B < N && com2A < N && com2B < N);
+    assume(com1A != com1B && com1A != com2A && com1A != com2B);
+    assume(com1B != com2A && com1B != com2B);
+    assume(com2A != com2B);
+
+    // pick 2 cards that represent the helper cards
+    unsigned int help1 = nondet_uint();
+    unsigned int help2 = nondet_uint();
+    assume(help1 < N&& help2 < N);
+    assume(help1 != com1A && help1 != com1B && help1 != com2A && help1 != com2B);
+    assume(help2 != com1A && help2 != com1B && help2 != com2A && help2 != com2B);
+    // check that helper cards are the same all througout every possible sequence in the state
+    //mit is one/ is zero/ ...
+    for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+        // if the probability/possibility of this state is not 0 
+        if (isStillPossible(s.seq[i].probs)) {
+            assume(isZero((s.seq[i].val[help1]), s.seq[i].val[help2]));
+        }
+    }
+    // perform the protocol -> is there a smart way? if not: hardcode the results
+    // return all the possible result states
+    // 
+}
+
 /**
  * Apply L nondeterministic actions (excluding the result action).
  * The function evaluates to true if:
@@ -1226,7 +1260,7 @@ unsigned int performActions(struct state s) {
             }
         }
         else if (action == FR_AND) {
-            // imlement FR AND here
+            // implement FR AND here
         }
         else if (action == FR_XOR) {
             // implement FR XOR here
