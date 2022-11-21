@@ -29,6 +29,7 @@ LENGTH=$2
 OPT=$3
 NUM_SYM='2' # This is the setting where all cards carry only two distinct symbols
 OUTFILE="twoCardProtocolXOR_n"$N"_l"$LENGTH"__"$HOST"_"$START_PRINT".out"
+SHORTFILE="shortTwoCardProtocolXOR_n"$N"_l"$LENGTH"__"$START_PRINT".out"
 
 OPTS=''
 while [ -n "$3" ]
@@ -148,7 +149,8 @@ FOO=$factorial
 
 POS_SEQ=$[$FOO / $DENOM]
 POS_SEQ_STRING="NUMBER_POSSIBLE_SEQUENCES"
-
+POS_SEQ_MINUS_ONE=$[$POS_SEQ -1]
+N_TIMES_TWO=$[$N*2]
 POS_PERM=$FOO
 POS_PERM_STRING="NUMBER_POSSIBLE_PERMUTATIONS"
 
@@ -188,18 +190,40 @@ else
     NUMBER_SUBGROUP_SIZES='0'
 fi
 
-echo -e '\n'"############################################################" 2>&1 | tee $OUTFILE
+echo -e '\n'"############################################################" 2>&1 | tee $OUTFILE | tee $SHORTFILE
 echo -e $TIMESTAMP'\n'$VERSION$OPTIONS 2>&1 | tee -a $OUTFILE
-echo -e "# N = "$N", NUM_SYM = "$NUM_SYM", L = "$LENGTH", NUMBER_POSSIBLE_PERMUTATIONS = "$POS_PERM", NUMBER_POSSIBLE_SEQUENCES = "$POS_SEQ" TIMEOUT = "$TIMEOUT 2>&1 | tee -a $OUTFILE
-echo -e "############################################################" 2>&1 | tee -a $OUTFILE
-echo -e '\n'"############################################################"'\n' 2>&1 | tee -a $OUTFILE
-timeout $TIMEOUT $CBMC $TRACE_OPTS -D L=$LENGTH -D N=$N -D NUM_SYM=$NUM_SYM -D $POS_SEQ_STRING=$POS_SEQ -D $POS_PERM_STRING=$POS_PERM -D PERM_SET_SIZE=$PERM_SET_SIZE -D NUMBER_SUBGROUP_SIZES=$NUMBER_SUBGROUP_SIZES $SUBGROUP_SIZES $FILE $OPT 2>&1 | sed '/^U/d' | tee -a $OUTFILE
+echo -e "# N = "$N", NUM_SYM = "$NUM_SYM", L = "$LENGTH", NUMBER_POSSIBLE_PERMUTATIONS = "$POS_PERM", NUMBER_POSSIBLE_SEQUENCES = "$POS_SEQ" TIMEOUT = "$TIMEOUT 2>&1 | tee -a $OUTFILE | tee -a $SHORTFILE 
+echo -e "############################################################" 2>&1 | tee -a $OUTFILE | tee -a $SHORTFILE 
+echo -e '\n'"############################################################"'\n' 2>&1 | tee -a $OUTFILE | tee -a $SHORTFILE
+timeout $TIMEOUT $CBMC $TRACE_OPTS -D L=$LENGTH -D N=$N -D NUM_SYM=$NUM_SYM -D $POS_SEQ_STRING=$POS_SEQ -D $POS_PERM_STRING=$POS_PERM -D PERM_SET_SIZE=$PERM_SET_SIZE -D NUMBER_SUBGROUP_SIZES=$NUMBER_SUBGROUP_SIZES $SUBGROUP_SIZES $FILE $OPT 2>&1 | tee -a $OUTFILE 
 END=$(date +'%Y-%m-%d %H:%M:%S %Z')
 END_SEC=$(date +%s)
 FINAL_TIMESTAMP="# Final Time: "$END
 DIFF=$(( $END_SEC - $START_SEC ))
-echo -e '\n'"############################################################" 2>&1 | tee -a $OUTFILE
-echo -e $FINAL_TIMESTAMP 2>&1 | tee -a $OUTFILE
-echo -e "# It took $DIFF seconds." 2>&1 | tee -a $OUTFILE
-echo -e "############################################################" 2>&1 | tee -a $OUTFILE
+
+
+#SHUFFLE
+grep -n -A $POS_SEQ_MINUS_ONE "applyShuffle(" $OUTFILE | tee -a $SHORTFILE
+grep -n -E 'permSetSize' $OUTFILE | tee -a $SHORTFILE
+grep -n -A $N_TIMES_TWO "lastChosenPermutationIndex" $OUTFILE | tee -a $SHORTFILE
+
+#TURN
+grep -n -A $POS_SEQ_MINUS_ONE "Turn(" $OUTFILE | tee -a $SHORTFILE
+grep -n -E 'turnPosition' $OUTFILE | tee -a $SHORTFILE
+grep -n -A $POS_SEQ "stateIdx" $OUTFILE | tee -a $SHORTFILE
+
+#RESULT (only for two bit result)
+grep -n -B 1 ' a=' $OUTFILE | tail -1 | tee -a $SHORTFILE
+grep -n -B 1 ' b=' $OUTFILE | tail -1 | tee -a $SHORTFILE
+grep -n -A 1 ' c=' $OUTFILE | tail -1 | tee -a $SHORTFILE
+grep -n -A 1 ' c=' $OUTFILE | tail -1 | tee -a $SHORTFILE
+
+
+
+
+echo -e '\n'"############################################################" 2>&1 | tee -a $OUTFILE | tee -a $SHORTFILE
+echo -e $FINAL_TIMESTAMP 2>&1 | tee -a $OUTFILE | tee -a $SHORTFILE
+echo -e "# It took $DIFF seconds." 2>&1 | tee -a $OUTFILE | tee -a $SHORTFILE
+echo -e "############################################################" 2>&1 | tee -a $OUTFILE | tee -a $SHORTFILE
+
 
