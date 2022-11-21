@@ -207,7 +207,7 @@ else
 fi
 
 echo -e '\n'"############################################################" 2>&1 | tee $OUTFILE | tee $SHORTFILE
-echo -e $TIMESTAMP'\n'$VERSION$OPTIONS 2>&1 | tee -a $OUTFILE
+echo -e '# HOST: '$HOST'\n'$TIMESTAMP'\n'$VERSION$OPTIONS 2>&1 | tee -a $OUTFILE
 echo -e "# N = "$N", NUM_SYM = "$NUM_SYM", L = "$LENGTH", NUMBER_POSSIBLE_PERMUTATIONS = "$POS_PERM", NUMBER_POSSIBLE_SEQUENCES = "$POS_SEQ" TIMEOUT = "$TIMEOUT 2>&1 | tee -a $OUTFILE | tee -a $SHORTFILE 
 echo -e "############################################################" 2>&1 | tee -a $OUTFILE | tee -a $SHORTFILE 
 echo -e '\n'"############################################################"'\n' 2>&1 | tee -a $OUTFILE | tee -a $SHORTFILE
