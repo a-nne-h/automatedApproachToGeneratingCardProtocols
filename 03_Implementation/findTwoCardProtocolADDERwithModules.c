@@ -1158,7 +1158,24 @@ unsigned int performActions(struct state s) {
         unsigned int action = nondet_uint();
         assume (action < A);
         // If A is greater than 2, we must add cases for additional actions below.
-        assume (A == 2);
+        if (MODULES == 0) {
+            assume(A == 2);
+        }
+        else {
+            assume(A == 6);
+            if (USE_FR_AND == 0) {
+                assume(A != 2);
+            }
+            if (USE_FR_XOR == 0) {
+                assume(A != 3);
+            }
+            if (USE_LV_AND == 0) {
+                assume(A != 4);
+            }
+            if (USE_LV_OR == 0) {
+                assume(A != 5);
+            }
+        }
         unsigned int next = i + 1;
 
         if (action == TURN) {
@@ -1196,16 +1213,28 @@ unsigned int performActions(struct state s) {
                     result = 1;
                 }
             }
-        } else if (action == SHUFFLE) {
+        }
+        else if (action == SHUFFLE) {
             /**
              * Apply a nondet shuffle and store the result in
              * the reachableStates array.
              */
             reachableStates[next] = applyShuffle(reachableStates[i]);
             if (isFinalState(reachableStates[next])) {
-                assume (next == L);
+                assume(next == L);
                 result = 1;
             }
+        }
+        else if (action == FR_AND) {
+            // imlement FR AND here
+        }
+        else if (action == FR_XOR) {
+            // implement FR XOR here
+        }
+        else if (action == LV_AND) {
+            // implement LV AND here
+        }else if (action == LV_OR){
+            // implement LV OR here
         } else {
             // No valid action was chosen. This must not happen.
             assume (next == L);
