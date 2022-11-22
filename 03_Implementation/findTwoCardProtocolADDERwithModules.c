@@ -1159,7 +1159,6 @@ struct turnStates applyFrAnd(struct state s) {
     assume(help1 != com1A && help1 != com1B && help1 != com2A && help1 != com2B);
     assume(help2 != com1A && help2 != com1B && help2 != com2A && help2 != com2B);
     // check that helper cards are the same all througout every possible sequence in the state
-    //mit is one/ is zero/ ...
     for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
         // if the probability/possibility of this state is not 0 
         if (isStillPossible(s.seq[i].probs)) {
@@ -1167,6 +1166,11 @@ struct turnStates applyFrAnd(struct state s) {
         }
     }
     // perform the protocol -> is there a smart way? if not: hardcode the results
+    // check for the input by iterating through all sequences and checking ifStillPossible
+    // then check what kind of output they would make for each different possible output and sort them (the probability) in
+    // 
+    
+
     // return all the possible result states
     // 
 }
@@ -1261,6 +1265,7 @@ unsigned int performActions(struct state s) {
         }
         else if (action == FR_AND) {
             // implement FR AND here
+            //as with TURN, chonse one output nondeterministically to look at further
         }
         else if (action == FR_XOR) {
             // implement FR XOR here
