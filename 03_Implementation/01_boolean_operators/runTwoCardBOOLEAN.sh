@@ -234,6 +234,7 @@ grep -n -B 1 ' b=' $OUTFILE | tail -1 | tee -a $SHORTFILE
 grep -n -A 1 ' c=' $OUTFILE | tail -1 | tee -a $SHORTFILE
 grep -n -A 1 ' c=' $OUTFILE | tail -1 | tee -a $SHORTFILE
 
+python manipulateShortInput.py "shortTwoCardProtocol"$OPERATOR"_n"$N"_l"$LENGTH"__"$START_PRINT".out" | tee -a $OUTFILE
 
 
 
