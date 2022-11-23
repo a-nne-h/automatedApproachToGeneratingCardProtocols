@@ -608,7 +608,14 @@ unsigned int isFinalState(struct state s) {
         for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
             if (!done && isStillPossible(s.seq[i].probs)) {
                 // changed (from s.seq[i].probs.frac[NUMBER_PROBABILITIES - 1].num;) so that statese [01] and [10] ar deciding
-                unsigned int deciding = (s.seq[i].probs.frac[1].num) || (s.seq[i].probs.frac[2].num);
+                unsigned int deciding  = 0;
+                if (WEAK_SECURITY == 2) {
+                    deciding = (s.seq[i].probs.frac[1].num);
+                }
+                else {
+                    deciding = (s.seq[i].probs.frac[1].num) || (s.seq[i].probs.frac[2].num);
+                }
+                
                 unsigned int first = s.seq[i].val[a];
                 unsigned int second = s.seq[i].val[b];
                 assume (first != second);
