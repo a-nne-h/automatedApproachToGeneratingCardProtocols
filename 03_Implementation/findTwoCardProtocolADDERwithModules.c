@@ -1202,16 +1202,16 @@ unsigned int performActions(struct state s) {
         else {
             assume(A == 6);
             if (USE_FR_AND == 0) {
-                assume(A != 2);
+                assume(action != 2);
             }
             if (USE_FR_XOR == 0) {
-                assume(A != 3);
+                assume(action != 3);
             }
             if (USE_LV_AND == 0) {
-                assume(A != 4);
+                assume(action != 4);
             }
             if (USE_LV_OR == 0) {
-                assume(A != 5);
+                assume(action != 5);
             }
         }
         unsigned int next = i + 1;
