@@ -343,6 +343,15 @@ const unsigned int subgroupSizes[13] =
 #endif
 
 /**
+* MODULES:
+* The maximum number of possible result states a protocol can have.
+* This is defined for all possibly used protocols because protocolStates needs to have a fixed size
+*/
+#ifndef MAX_PROTOCOL_ENDSTATES
+#define MAX_PROTOCOL_ENDSTATES 2
+#endif
+
+/**
  * The number of states stored in the protocol run (Start state + all L derived states).
  */
 #ifndef MAX_REACHABLE_STATES
@@ -421,6 +430,19 @@ struct permutationState {
 struct turnStates {
     struct state states[MAX_TURN_OBSERVATIONS];
     unsigned int isUsed[MAX_TURN_OBSERVATIONS];
+};
+
+/**
+* ADDER:
+* Analog to turn states, this struct is used to retun arrays of states after a protocol operation.
+* There is one state for each possible end state (resut state) of the protocol
+* In each usage of a protocol, for each sequence the resulting sequences in each end state are calculated and stored in states.
+* isUsed[i] contains if the corresponding state[i] holds a end state or isn't used
+* 
+*/
+struct protocolStates {
+    struct state states[MAX_PROTOCOL_ENDSTATES];
+    unsigned int isUsed[MAX_PROTOCOL_ENDSTATES];
 };
 
 /**
@@ -1112,7 +1134,7 @@ struct turnStates copyObservations(struct state s, unsigned int turnPosition) {
 struct turnStates applyTurn(struct state s) {
     // Choose turn position nondeterministically, otherwise we cannot do two turns in a row.
     unsigned int turnPosition = nondet_uint();
-    assume (turnPosition < N);
+    assume(turnPosition < N);
 
     struct turnStates result = copyObservations(s, turnPosition);
     if (WEAK_SECURITY) { // Weaker security check: output-possibilistic or input-possibilistic.
@@ -1124,19 +1146,19 @@ struct turnStates applyTurn(struct state s) {
                 // that the state contains a sequence for every in-/output possibility.
                 for (unsigned int i = 0; i < NUMBER_PROBABILITIES; i++) {
                     unsigned int seqIndex = nondet_uint();
-                    assume (seqIndex < NUMBER_POSSIBLE_SEQUENCES);
-                    assume (resultState.seq[seqIndex].probs.frac[i].num);
+                    assume(seqIndex < NUMBER_POSSIBLE_SEQUENCES);
+                    assume(resultState.seq[seqIndex].probs.frac[i].num);
                 }
             }
         }
-    } else { // Probabilistic security.
+    }
+    else { // Probabilistic security.
         struct fractions probs = computeTurnProbabilities(result);
         result = alignAndAssignFractions(result, probs);
     }
-
-    return result;
 }
 
+ 
 struct turnStates applyFrAnd(struct state s) {
     // ATTENTION: we need a new state that is similar but not the same to turnStates, 
     // because the TurnStates have the size of POSSIBLE_OBSERVATION
