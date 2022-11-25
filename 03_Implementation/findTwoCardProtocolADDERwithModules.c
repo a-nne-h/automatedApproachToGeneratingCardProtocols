@@ -1072,12 +1072,13 @@ struct fractions computeTurnProbabilities(struct turnStates result) {
                          * If the sequence does not belong to an input sequence,
                          * this sequence should not be updated in this step.
                          */
-                        if (num && denom == newDenom) {
-                            probs.frac[k].num += num;
-                        } else if (num && denom != newDenom) {
-                            probs.frac[k].num = (newNum * denom) + (num * newDenom);
-                            probs.frac[k].den *= denom;
-                        }
+if (num && denom == newDenom) {
+probs.frac[k].num += num;
+}
+else if (num && denom != newDenom) {
+probs.frac[k].num = (newNum * denom) + (num * newDenom);
+probs.frac[k].den *= denom;
+}
                     }
                 }
             }
@@ -1109,7 +1110,7 @@ struct turnStates copyObservations(struct state s, unsigned int turnPosition) {
             unsigned int turnIdx = turnedCardNumber - 1;
             cntTurnObservations += result.isUsed[turnIdx] ? 0 : 1;
             result.isUsed[turnIdx] = 1;
-            assume (cntTurnObservations <= MAX_TURN_OBSERVATIONS);
+            assume(cntTurnObservations <= MAX_TURN_OBSERVATIONS);
             for (unsigned int j = 0; j < NUMBER_PROBABILITIES; j++) {
                 struct fraction prob = seq.probs.frac[j];
                 // Copy numerator.
@@ -1121,7 +1122,7 @@ struct turnStates copyObservations(struct state s, unsigned int turnPosition) {
             }
         }
     }
-    assume (MIN_TURN_OBSERVATIONS <= cntTurnObservations);
+    assume(MIN_TURN_OBSERVATIONS <= cntTurnObservations);
     return result;
 }
 
@@ -1156,10 +1157,52 @@ struct turnStates applyTurn(struct state s) {
         struct fractions probs = computeTurnProbabilities(result);
         result = alignAndAssignFractions(result, probs);
     }
+    return result;
 }
 
- 
-struct turnStates applyFrAnd(struct state s) {
+/**
+* MODULES: 
+* 
+*/
+struct protocolStates copyResults(struct sequence seq, struct protocolStates result, unsigned int resultIdx, unsigned int stateIdx){
+}
+
+/**
+* MODULES: 
+*  perform the protocol->is there a smart way ? if not: hardcode the results
+*  check for the input by iterating through all sequences and checking ifStillPossible
+*  then check what kind of output they would make for each different possible output and sort them (the probability) in
+*/
+struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int com1B, unsigned int com2A, unsigned int com2B, unsigned int help1, unsigned int help2) {
+    struct protocolStates result;
+    // Initialise N empty states.
+    for (unsigned int i = 0; i < MAX_PROTOCOL_ENDSTATES; i++) {
+        result.states[i] = emptyState;
+        result.isUsed[i] = 0;
+    }
+    unsigned int resultIdx = 0;
+    for (unsigned int j = 0; j < NUMBER_POSSIBLE_SEQUENCES; j++) {
+        struct sequence seq = s.seq[j];
+        if (isStillPossible(seq.probs)) {
+            if (isZero(seq.val[com2A], seq.val[com2B)) {
+             
+            }
+            else {
+                if (isZero(seq.val[com1A], seq.val[com1B]) {
+
+                }
+                else {
+
+                }
+            }
+        }
+        result.isUsed[0] = 1;
+    }
+    
+    return result;
+}
+
+struct protocolStates applyFrAnd(struct state s) {
     // ATTENTION: we need a new state that is similar but not the same to turnStates, 
     // because the TurnStates have the size of POSSIBLE_OBSERVATION
     // ATTENTION: do we differentiate for output possibilistic Security and the rest?
@@ -1187,12 +1230,7 @@ struct turnStates applyFrAnd(struct state s) {
             assume(isZero((s.seq[i].val[help1]), s.seq[i].val[help2]));
         }
     }
-    // perform the protocol -> is there a smart way? if not: hardcode the results
-    // check for the input by iterating through all sequences and checking ifStillPossible
-    // then check what kind of output they would make for each different possible output and sort them (the probability) in
-    // 
-    
-
+    result = doFrAnd(s, com1A, com1B, com2A, com2B, help1, help2);
     // return all the possible result states
     // 
 }
