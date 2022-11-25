@@ -1164,7 +1164,8 @@ struct turnStates applyTurn(struct state s) {
 * MODULES: 
 * 
 */
-struct protocolStates copyResults(struct sequence seq, struct protocolStates result, unsigned int resultIdx, unsigned int stateIdx){
+struct protocolStates copyResults(struct sequence seq, struct protocolStates result, unsigned int resultIdx, unsigned int endState[N]) {
+
 }
 
 /**
@@ -1180,25 +1181,79 @@ struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int c
         result.states[i] = emptyState;
         result.isUsed[i] = 0;
     }
-    unsigned int resultIdx = 0;
+
     for (unsigned int j = 0; j < NUMBER_POSSIBLE_SEQUENCES; j++) {
         struct sequence seq = s.seq[j];
+        unsigned int endState = seq.val;
         if (isStillPossible(seq.probs)) {
-            if (isZero(seq.val[com2A], seq.val[com2B)) {
-             
+            if (isZero(seq.val[com2A], seq.val[com2B)) { // 121212 & 211212
+                endState[com1A] = 1;
+                endState[com1B] = 2;
+                //endState[com2A] = 1;
+                //endState[com2B] = 2;
+                //endState[help1] = 1;
+                //endState[help2] = 2;
             }
             else {
-                if (isZero(seq.val[com1A], seq.val[com1B]) {
+                if (isZero(seq.val[com1A], seq.val[com1B])) { // 122112
+                    //endState[comA1] = 1;
+                    //endState[com1B] = 2;
+                    //endState[com2A] = 2;
+                    //endState[com2B] = 1;
+                    //endState[help1] = 1;
+                    //endState[help2] = 2;
 
                 }
-                else {
-
+                else { //212112
+                    endState[comA1] = 1;
+                    endState[com1B] = 2;
+                    endState[com2A] = 1;
+                    endState[com2B] = 2;
+                    endState[help1] = 2;
+                    endState[help2] = 1;
                 }
             }
+            result = copyResults(seq, result, 0, endState);
+            result.isUsed[0] = 1;
         }
-        result.isUsed[0] = 1;
     }
-    
+
+    for (unsigned int k = 0; k < NUMBER_POSSIBLE_SEQUENCES; k++) {
+        struct sequence seq = s.seq[k];
+        unsigned int endState = seq.val;
+        if (isStillPossible(seq.probs)) {
+            if (isZero(seq.val[com2A], seq.val[com2B)) { // 121212 & 211212
+                endState[com1A] = 1;
+                endState[com1B] = 2;
+                //endState[com2A] = 1;
+                //endState[com2B] = 2;
+                //endState[help1] = 1;
+                //endState[help2] = 2;
+            }
+            else {
+                if (isZero(seq.val[com1A], seq.val[com1B])) { // 122112
+                    endState[comA1] = 2;
+                    endState[com1B] = 1;
+                    endState[com2A] = 1;
+                    endState[com2B] = 2;
+                    endState[help1] = 2;
+                    endState[help2] = 1;
+
+                }
+                else { //212112
+                    //endState[comA1] = 2;
+                    //endState[com1B] = 1;
+                    //endState[com2A] = 2;
+                    //endState[com2B] = 1;
+                    //endState[help1] = 1;
+                    //endState[help2] = 2;
+                }
+            }
+            result = copyResults(seq, result, 1, endState);
+            result.isUsed[1] = 1;
+        }
+    }
+
     return result;
 }
 
