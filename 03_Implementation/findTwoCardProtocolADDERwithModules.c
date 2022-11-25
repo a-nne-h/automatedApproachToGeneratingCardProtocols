@@ -1162,10 +1162,15 @@ struct turnStates applyTurn(struct state s) {
 
 /**
 * MODULES: 
-* 
+* searches for the endSequence in result.states[resultIdx]
+* if found, copy the probabilities/possibilities from seq to result.states[resultIdx] and return new result
 */
-struct protocolStates copyResults(struct sequence seq, struct protocolStates result, unsigned int resultIdx, unsigned int endState[N]) {
+struct protocolStates copyResults(struct sequence seq, struct protocolStates result, unsigned int resultIdx, unsigned int endSequence[N]) {
+    // search for the endSequence in result.states[resultIdx]
+    // when found copy the probabilities/possibilities from seq to result.states[resultIdx] (! add the values -> cr shuffle)
+    // return result
 
+    return result;
 }
 
 /**
