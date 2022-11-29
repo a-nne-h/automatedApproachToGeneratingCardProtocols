@@ -114,7 +114,7 @@ void __CPROVER_assert(int x, char y[]);
  * For more players or other scenarios this value has to be adapted.
  */
 /**
-* ADDER: stays 4 bec. aöso 2 players
+* ADDER: stays 4 bec. also 2 players
 */
 #ifndef NUMBER_START_SEQS
 #define NUMBER_START_SEQS 4
@@ -552,7 +552,7 @@ unsigned int isBottom(struct fractions probs) {
     if (WEAK_SECURITY == 2) {
         bottom = (probs.frac[0].num && probs.frac[1].num) || (probs.frac[1].num && probs.frac[2].num) || (probs.frac[2].num && probs.frac[0].num);
     } else {
-        bottom =  ((probs.frac[1].num  || probs.frac[2].num) && (probs.frac[0].num|| probs.frac[1].num)) || (probs.frac[0].num && probs.frac[1].num);
+        bottom =  ((probs.frac[1].num  || probs.frac[2].num) && (probs.frac[0].num|| probs.frac[3].num)) || (probs.frac[0].num && probs.frac[3].num);
     }
     return bottom;
 }
@@ -1202,16 +1202,18 @@ int main() {
     /**
     * ADDER: change the weak_security == 2 part here 
     */
-    for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
-        unsigned int idx = arrSeqIdx[i];
-        unsigned int inputPoss = 0;
-        unsigned int pos = 0;
-        if (WEAK_SECURITY != 2) { // We differentiate the output (i.e., NOT output possibilistic)
-            // Assign every sequence to their input possibility.
+    if (WEAK_SECURITY != 2) { // We differentiate the output (i.e., NOT output possibilistic)
+        // Assign every sequence to their input possibility.
+        for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
+            unsigned int idx = arrSeqIdx[i];
+            unsigned int inputPoss = 0;
+            unsigned int pos = 0;
+        
             inputPoss = inputProbability(i, start[i].arr);
             pos = i;
+        
+            startState.seq[idx].probs.frac[pos].num = inputPoss;
         }
-        startState.seq[idx].probs.frac[pos].num = inputPoss;
     }
     // important for output possibilistic to set the last entry (11) to 1
     // change if using other function than AND
