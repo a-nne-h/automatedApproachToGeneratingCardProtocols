@@ -120,7 +120,7 @@ void __CPROVER_assert(int x, char y[]);
  * If set to 1, only closed protocols with closed shuffles will be searched.
  */
 #ifndef CLOSED_PROTOCOL
-#define CLOSED_PROTOCOL 0
+#define CLOSED_PROTOCOL 1
 #endif
 
 /**
@@ -823,6 +823,7 @@ struct state applyShuffle(struct state s) {
         // As in state trees, we want to include the identity if it is not a permutation.
         assume (permSetSize == 1 || takenPermutations[0] > 0);
     }
+    assert(0);
     // Apply the shuffle that was generated above.
     struct state res = doShuffle(s, permutationSet, permSetSize);
 

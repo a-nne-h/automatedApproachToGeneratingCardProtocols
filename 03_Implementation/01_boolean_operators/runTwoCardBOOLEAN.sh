@@ -32,9 +32,9 @@ OUTFILE="twoCardProtocol"$OPERATOR"_n"$N"_l"$LENGTH"__"$HOST"_"$START_PRINT".out
 SHORTFILE="shortTwoCardProtocol"$OPERATOR"_n"$N"_l"$LENGTH"__"$START_PRINT".out"
 
 OPTS=''
-while [ -n "$3" ]
+while [ -n "$4" ]
 do
-    OPTS=$OPTS" ${3}" && shift;
+    OPTS=$OPTS" ${4}" && shift;
 done
 PRINT_OPTS=''
 if [ -n "$OPTS" ]
