@@ -823,7 +823,6 @@ struct state applyShuffle(struct state s) {
         // As in state trees, we want to include the identity if it is not a permutation.
         assume (permSetSize == 1 || takenPermutations[0] > 0);
     }
-    assert(0);
     // Apply the shuffle that was generated above.
     struct state res = doShuffle(s, permutationSet, permSetSize);
 
