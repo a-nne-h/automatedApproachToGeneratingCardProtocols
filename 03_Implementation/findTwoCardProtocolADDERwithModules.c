@@ -1214,6 +1214,75 @@ struct protocolStates copyResults(struct sequence seq, struct protocolStates res
 }
 
 
+
+struct protocolStates doFrXor(struct state s, unsigned int com1A, unsigned int com1B, unsigned int com2A, unsigned int com2B) {
+    struct protocolStates result;
+    // Initialise N empty states.
+    for (unsigned int i = 0; i < MAX_PROTOCOL_ENDSTATES; i++) {
+        result.states[i] = emptyState;
+        result.isUsed[i] = 0;
+    }
+    for (unsigned int j = 0; j < NUMBER_POSSIBLE_SEQUENCES; j++) {
+        struct sequence seq = s.seq[j];
+        unsigned int endState = seq.val;
+        if (isStillPossible(seq.probs)) {
+            if ((isZero((seq.val[com1A], seq.val[com1B]) && isZero(seq.val[com2A], seq.val[com2B]))) || (isOne((seq.val[com1A], seq.val[com1B]) && isOne(seq.val[com2A], seq.val[com2B])))) { // 1212 & 2121
+                endState[com1A] = 1;
+                endState[com1B] = 2;
+                endState[com2A] = 1;
+                endState[com2B] = 2;
+            }
+            else { // 1221 & 2112
+                endState[com1A] = 2;
+                endState[com1B] = 1;
+                endState[com2A] = 1;
+                endState[com2B] = 2;
+                
+            }
+            result = copyResults(seq, result, 0, endState);
+            result.isUsed[0] = 1;
+        }
+    }
+    for (unsigned int k = 0; k < NUMBER_POSSIBLE_SEQUENCES; k++) {
+        struct sequence seq = s.seq[k];
+        unsigned int endState = seq.val;
+        if (isStillPossible(seq.probs)) {
+            if ((isZero((seq.val[com1A], seq.val[com1B]) && isZero(seq.val[com2A], seq.val[com2B]))) || (isOne((seq.val[com1A], seq.val[com1B]) && isOne(seq.val[com2A], seq.val[com2B])))) { // 1212 & 2121
+                endState[com1A] = 2;
+                endState[com1B] = 1;
+                endState[com2A] = 2;
+                endState[com2B] = 1;
+            }
+            else { // 1221 & 2112
+                endState[com1A] = 1;
+                endState[com1B] = 2;
+                endState[com2A] = 2;
+                endState[com2B] = 1;
+
+            }
+            result = copyResults(seq, result, 1, endState);
+            result.isUsed[1] = 1;
+        }
+    }
+    return result;
+}
+
+struct protocolStates applyFrXor(struct state s) {
+    // pick 4 cards that represent the two commitments
+    unsigned int com1A = nondet_uint();
+    unsigned int com1B = nondet_uint();
+    unsigned int com2A = nondet_uint();
+    unsigned int com2B = nondet_uint();
+    assume(com1A < N&& com1B < N&& com2A < N&& com2B < N);
+    assume(com1A != com1B && com1A != com2A && com1A != com2B);
+    assume(com1B != com2A && com1B != com2B);
+    assume(com2A != com2B);
+
+    struct protocolStates result = doFrXor(s, com1A, com1B, com2A, com2B);
+    // check for security? s. apply Turn -> not really necessary because we assume that the protocol is secure
+    return result;
+}
+
 /**
 * MODULES: 
 *  perform the protocol->is there a smart way ? if not: hardcode the results
@@ -1232,7 +1301,7 @@ struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int c
         struct sequence seq = s.seq[j];
         unsigned int endState = seq.val;
         if (isStillPossible(seq.probs)) {
-            if (isZero(seq.val[com2A], seq.val[com2B)) { // 121212 & 211212
+            if (isZero(seq.val[com2A], seq.val[com2B])) { // 121212 & 211212
                 endState[com1A] = 1;
                 endState[com1B] = 2;
                 //endState[com2A] = 1;
@@ -1242,7 +1311,7 @@ struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int c
             }
             else {
                 if (isZero(seq.val[com1A], seq.val[com1B])) { // 122112
-                    //endState[comA1] = 1;
+                    //endState[com1A] = 1;
                     //endState[com1B] = 2;
                     //endState[com2A] = 2;
                     //endState[com2B] = 1;
@@ -1268,7 +1337,7 @@ struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int c
         struct sequence seq = s.seq[k];
         unsigned int endState = seq.val;
         if (isStillPossible(seq.probs)) {
-            if (isZero(seq.val[com2A], seq.val[com2B)) { // 121212 & 211212
+            if (isZero(seq.val[com2A], seq.val[com2B])) { // 121212 & 211212
                 endState[com1A] = 2;
                 endState[com1B] = 1;
                 //endState[com2A] = 1;
@@ -1278,7 +1347,7 @@ struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int c
             }
             else {
                 if (isZero(seq.val[com1A], seq.val[com1B])) { // 122112
-                    endState[comA1] = 2;
+                    endState[com1A] = 2;
                     endState[com1B] = 1;
                     endState[com2A] = 1;
                     endState[com2B] = 2;
@@ -1287,7 +1356,7 @@ struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int c
 
                 }
                 else { //212112
-                    //endState[comA1] = 2;
+                    //endState[com1A] = 2;
                     //endState[com1B] = 1;
                     //endState[com2A] = 2;
                     //endState[com2B] = 1;
