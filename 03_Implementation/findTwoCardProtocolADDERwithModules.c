@@ -94,7 +94,7 @@ void __CPROVER_assert(int x, char y[]);
 #if MODULES == 0
     #define A 2
 #else
-    #define A 6
+    #define A 3
 #endif
 
 /**
@@ -111,6 +111,14 @@ void __CPROVER_assert(int x, char y[]);
 #define SHUFFLE 1
 #endif
 
+ /**
+ * Number assigned to AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
+ */
+#ifndef PROTOCOL
+#define PROTOCOL 2
+#endif
+
+
 /**
 * whether the protcol
 * AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
@@ -120,12 +128,13 @@ void __CPROVER_assert(int x, char y[]);
 #define USE_FR_AND 0
 #endif 
 
- /**
- * Number assigned to AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
- */
+/**
+* AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
+*/
 #ifndef FR_AND
-#define FR_AND 2
-#endif
+#define FR_AND 0
+#endif 
+
 
  /**
  * whether the protcol
@@ -137,11 +146,11 @@ void __CPROVER_assert(int x, char y[]);
 #endif 
 
  /**
- * Number assigned to XOR by Takaaki Mizukiand Hideaki Sone(2009) -> Finite Runtime, 4 cards, 2 steps
+ * XOR by Takaaki Mizukiand Hideaki Sone(2009) -> Finite Runtime, 4 cards, 2 steps
  */
 #ifndef FR_XOR
-#define FR_XOR 3
-#endif
+#define FR_XOR 1
+#endif 
 
  /**
  * whether the protcol
@@ -152,14 +161,16 @@ void __CPROVER_assert(int x, char y[]);
 #define USE_LV_AND 0
 #endif 
 
-/**
-* Number assigned to AND by Koch et al (2021) -> Las Vegas, 5 cards, 5 steps
-*/
+ /**
+ * AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
+ */
 #ifndef LV_AND
-#define LV_AND 4
-#endif
+#define LV_AND 2
+#endif 
+
 
 /**
+* ATTENTION: this will have to be replaced
 * whether the protcol
 * OR by myself -> Las Vegas, 4 cards, 4 steps
 * is used (0: not used, 1: used)
@@ -169,17 +180,15 @@ void __CPROVER_assert(int x, char y[]);
 #endif 
 
 /**
-* Number assigned to OR by myself -> Las Vegas, 4 cards, 4 steps
+* OR by myself -> Las Vegas, 4 cards, 4 steps
 */
 #ifndef LV_OR
-#define LV_OR 5
-#endif
-
+#define LV_OR 3
+#endif 
 
 /**
 * NOT does not have to be a protocol, becaue it is nothing else than a perm operation which is already included
-* Whether NOT is used
-* Number assigned to NOT -> Finite Runtime, 2 cards, 1 steps
+* Whether NOT is used -> Finite Runtime, 2 cards, 1 steps
 */
 
 /**
@@ -436,7 +445,7 @@ struct turnStates {
 };
 
 /**
-* ADDER:
+* MODULES:
 * Analog to turn states, this struct is used to retun arrays of states after a protocol operation.
 * There is one state for each possible end state (resut state) of the protocol
 * In each usage of a protocol, for each sequence the resulting sequences in each end state are calculated and stored in states.
@@ -1346,25 +1355,13 @@ unsigned int performActions(struct state s) {
     for (unsigned int i = 0; i < L; i++) {
         // Choose the action nondeterministically.
         unsigned int action = nondet_uint();
-        assume (action < A);
+        assume(action < A);
         // If A is greater than 2, we must add cases for additional actions below.
         if (MODULES == 0) {
             assume(A == 2);
         }
         else {
-            assume(A == 6);
-            if (USE_FR_AND == 0) {
-                assume(action != 2);
-            }
-            if (USE_FR_XOR == 0) {
-                assume(action != 3);
-            }
-            if (USE_LV_AND == 0) {
-                assume(action != 4);
-            }
-            if (USE_LV_OR == 0) {
-                assume(action != 5);
-            }
+            assume(A == 3);
         }
         unsigned int next = i + 1;
 
@@ -1376,30 +1373,31 @@ unsigned int performActions(struct state s) {
              */
             struct turnStates possiblePostStates = applyTurn(reachableStates[i]);
 
-            /** 
-            * We decide on one branch to look at further. 
-            * This isn't tecnically sufficient, but we can infer the resulting protocol 
+            /**
+            * We decide on one branch to look at further.
+            * This isn't tecnically sufficient, but we can infer the resulting protocol
             * from the trace that the program gives us for one branch
             */
             unsigned int stateIdx = nondet_uint();
-            assume (stateIdx < MAX_TURN_OBSERVATIONS);
-            assume (possiblePostStates.isUsed[stateIdx]);
+            assume(stateIdx < MAX_TURN_OBSERVATIONS);
+            assume(possiblePostStates.isUsed[stateIdx]);
             reachableStates[next] = possiblePostStates.states[stateIdx];
             if (!FINITE_RUNTIME) { // Restart-free Las-Vegas.
                 if (isFinalState(reachableStates[next])) {
-                    assume (next == L);
+                    assume(next == L);
                     result = 1;
                 }
-            } else {
+            }
+            else {
                 unsigned int isFinalTurn = 1;
                 for (unsigned int j = 0; j < MAX_TURN_OBSERVATIONS; j++) {
-                    if (    possiblePostStates.isUsed[j]
+                    if (possiblePostStates.isUsed[j]
                         && !isFinalState(possiblePostStates.states[j])) {
                         isFinalTurn = 0;
                     }
                 }
                 if (isFinalTurn) {
-                    assume (next == L);
+                    assume(next == L);
                     result = 1;
                 }
             }
@@ -1415,17 +1413,37 @@ unsigned int performActions(struct state s) {
                 result = 1;
             }
         }
-        else if (action == FR_AND) {
-            // implement FR AND here
-            //as with TURN, chonse one output nondeterministically to look at further
-        }
-        else if (action == FR_XOR) {
-            // implement FR XOR here
-        }
-        else if (action == LV_AND) {
-            // implement LV AND here
-        }else if (action == LV_OR){
-            // implement LV OR here
+        else if (action == PROTOCOL) {
+            unsigned int protocolChosen = nondet_uint();
+            if (USE_FR_AND == 0) {
+                assume(protocolChosen != FR_AND);
+            }
+            if (USE_FR_XOR == 0) {
+                assume(protocolChosen != FR_XOR);
+            }
+            if (USE_LV_AND == 0) {
+                assume(protocolChosen != LV_AND);
+            }
+            if (USE_LV_OR == 0) {
+                assume(protocolChosen != LV_OR);
+            }
+
+            struct protocolStates resultingStates;
+            if (protocolChosen == FR_AND) {
+                resultingStates = applyFrAnd(s);
+            }
+            else if (protocolChosen == FR_XOR) {
+
+            }
+            else if (protocolChosen == LV_AND) {
+
+            }
+            else if (protocolChosen == LV_OR) {
+
+            }
+
+            //as with TURN, choose one output nondeterministically to look at further
+
         } else {
             // No valid action was chosen. This must not happen.
             assume (next == L);
