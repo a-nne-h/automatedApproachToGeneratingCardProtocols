@@ -1429,6 +1429,11 @@ unsigned int performActions(struct state s) {
             }
 
             struct protocolStates resultingStates;
+
+            for (unsigned int i = 0; i < MAX_PROTOCOL_ENDSTATES; i++) {
+                resultingStates.states[i] = emptyState;
+                resultingStates.isUsed[i] = 0;
+            }
             if (protocolChosen == FR_AND) {
                 resultingStates = applyFrAnd(s);
             }
@@ -1443,6 +1448,17 @@ unsigned int performActions(struct state s) {
             }
 
             //as with TURN, choose one output nondeterministically to look at further
+            unsigned int stateIdx = nondet_uint();
+            assume(stateIdx < MAX_PROTOCOL_ENDSTATES);
+            assume(resultingStates.isUsed[stateIdx]);
+            reachableStates[next] = resultingStates.states[stateIdx];
+
+
+            // only for not Final Runtime
+            if (isFinalState(reachableStates[next])) {
+                assume(next == L);
+                result = 1;
+            }
 
         } else {
             // No valid action was chosen. This must not happen.
