@@ -177,6 +177,8 @@ void __CPROVER_assert(int x, char y[]);
 
 
 /**
+* NOT does not have to be a protocol, becaue it is nothing else than a perm operation which is already included
+* Whether NOT is used
 * Number assigned to NOT -> Finite Runtime, 2 cards, 1 steps
 */
 
@@ -346,6 +348,7 @@ const unsigned int subgroupSizes[13] =
 * MODULES:
 * The maximum number of possible result states a protocol can have.
 * This is defined for all possibly used protocols because protocolStates needs to have a fixed size
+* it is currently defined as 2, because the protocol with the most endstates has 2 endstates
 */
 #ifndef MAX_PROTOCOL_ENDSTATES
 #define MAX_PROTOCOL_ENDSTATES 2
@@ -1158,20 +1161,49 @@ struct turnStates applyTurn(struct state s) {
         result = alignAndAssignFractions(result, probs);
     }
     return result;
-}cl
+}
 
 /**
-* MODULES: 
+* MODULES:
+* finds the index of a given sequence (as an array) within a state.
+*/
+unsigned  int findIndex(unsigned int endSequence[N]) {
+    unsigned int index = 0;
+    for (int i; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+        unsigned int correct = 1;
+        for (int j; j < N; j++) {
+            if (endSequence[j] != emptyState.seq[i].val[j])
+            correct = 0;
+        }
+        if (correct) {
+            index = i;
+        }
+    }
+    return index
+}
+/**
+* MODULES:
 * searches for the endSequence in result.states[resultIdx]
 * if found, copy the probabilities/possibilities from seq to result.states[resultIdx] and return new result
 */
 struct protocolStates copyResults(struct sequence seq, struct protocolStates result, unsigned int resultIdx, unsigned int endSequence[N]) {
-    // search for the endSequence in result.states[resultIdx]
-    // when found copy the probabilities/possibilities from seq to result.states[resultIdx] (! add the values -> cr shuffle)
-    // return result
 
+    //find index of sequence within state that matches endSequence
+    unsigned int index = findIndex();
+
+    // copy the probabilities/possibilities from seq to result.states[resultIdx] (! add the values -> cr shuffle)
+    for (unsigned int j = 0; j < NUMBER_PROBABILITIES; j++) {
+        struct fraction prob = seq.probs.frac[j];
+        // Copy numerator.
+        result.states[resultIdx].seq[index].probs.frac[j].num = prob.num;
+        if (!WEAK_SECURITY) { // Probabilistic security
+            // Copy denominator.
+            result.states[resultIdx].seq[index].probs.frac[j].den = prob.den;
+        }
+    }
     return result;
 }
+
 
 /**
 * MODULES: 
@@ -1210,7 +1242,7 @@ struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int c
 
                 }
                 else { //212112
-                    endState[comA1] = 1;
+                    endState[com1A] = 1;
                     endState[com1B] = 2;
                     endState[com2A] = 1;
                     endState[com2B] = 2;
@@ -1228,8 +1260,8 @@ struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int c
         unsigned int endState = seq.val;
         if (isStillPossible(seq.probs)) {
             if (isZero(seq.val[com2A], seq.val[com2B)) { // 121212 & 211212
-                endState[com1A] = 1;
-                endState[com1B] = 2;
+                endState[com1A] = 2;
+                endState[com1B] = 1;
                 //endState[com2A] = 1;
                 //endState[com2B] = 2;
                 //endState[help1] = 1;
@@ -1290,9 +1322,9 @@ struct protocolStates applyFrAnd(struct state s) {
             assume(isZero((s.seq[i].val[help1]), s.seq[i].val[help2]));
         }
     }
-    result = doFrAnd(s, com1A, com1B, com2A, com2B, help1, help2);
-    // return all the possible result states
-    // 
+    struct protocolStates result = doFrAnd(s, com1A, com1B, com2A, com2B, help1, help2);
+    // check for security? s. apply Turn -> not really necessary because we assume that the protocol is secure
+    return result;
 }
 
 /**
