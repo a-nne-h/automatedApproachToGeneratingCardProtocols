@@ -1178,9 +1178,9 @@ struct turnStates applyTurn(struct state s) {
 */
 unsigned  int findIndex(unsigned int endSequence[N]) {
     unsigned int index = 0;
-    for (int i; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+    for (int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
         unsigned int correct = 1;
-        for (int j; j < N; j++) {
+        for (int j= 0; j < N; j++) {
             if (endSequence[j] != emptyState.seq[i].val[j])
             correct = 0;
         }
@@ -1188,7 +1188,7 @@ unsigned  int findIndex(unsigned int endSequence[N]) {
             index = i;
         }
     }
-    return index
+    return index;
 }
 /**
 * MODULES:
@@ -1198,7 +1198,7 @@ unsigned  int findIndex(unsigned int endSequence[N]) {
 struct protocolStates copyResults(struct sequence seq, struct protocolStates result, unsigned int resultIdx, unsigned int endSequence[N]) {
 
     //find index of sequence within state that matches endSequence
-    unsigned int index = findIndex();
+    unsigned int index = findIndex(endSequence);
 
     // copy the probabilities/possibilities from seq to result.states[resultIdx] (! add the values -> cr shuffle)
     for (unsigned int j = 0; j < NUMBER_PROBABILITIES; j++) {
@@ -1226,7 +1226,7 @@ struct protocolStates doFrXor(struct state s, unsigned int com1A, unsigned int c
         struct sequence seq = s.seq[j];
         unsigned int endState = seq.val;
         if (isStillPossible(seq.probs)) {
-            if ((isZero((seq.val[com1A], seq.val[com1B]) && isZero(seq.val[com2A], seq.val[com2B]))) || (isOne((seq.val[com1A], seq.val[com1B]) && isOne(seq.val[com2A], seq.val[com2B])))) { // 1212 & 2121
+            if ((isZero(seq.val[com1A], seq.val[com1B]) && isZero(seq.val[com2A], seq.val[com2B])) || ((isOne(seq.val[com1A], seq.val[com1B]) && isOne(seq.val[com2A], seq.val[com2B])))) { // 1212 & 2121
                 endState[com1A] = 1;
                 endState[com1B] = 2;
                 endState[com2A] = 1;
@@ -1247,7 +1247,7 @@ struct protocolStates doFrXor(struct state s, unsigned int com1A, unsigned int c
         struct sequence seq = s.seq[k];
         unsigned int endState = seq.val;
         if (isStillPossible(seq.probs)) {
-            if ((isZero((seq.val[com1A], seq.val[com1B]) && isZero(seq.val[com2A], seq.val[com2B]))) || (isOne((seq.val[com1A], seq.val[com1B]) && isOne(seq.val[com2A], seq.val[com2B])))) { // 1212 & 2121
+            if ((isZero(seq.val[com1A], seq.val[com1B]) && isZero(seq.val[com2A], seq.val[com2B])) || ((isOne(seq.val[com1A], seq.val[com1B]) && isOne(seq.val[com2A], seq.val[com2B])))) { // 1212 & 2121
                 endState[com1A] = 2;
                 endState[com1B] = 1;
                 endState[com2A] = 2;
