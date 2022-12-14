@@ -172,7 +172,7 @@ void __CPROVER_assert(int x, char y[]);
 /**
 * ATTENTION: this will have to be replaced
 * whether the protcol
-* OR by myself -> Las Vegas, 4 cards, 4 steps
+* OR by myself -> Las Vegas, 4 cards, 6 steps
 * is used (0: not used, 1: used)
 */
 #ifndef USE_LV_OR
@@ -180,7 +180,7 @@ void __CPROVER_assert(int x, char y[]);
 #endif 
 
 /**
-* OR by myself -> Las Vegas, 4 cards, 4 steps
+* OR by myself -> Las Vegas, 4 cards, 6 steps
 */
 #ifndef LV_OR
 #define LV_OR 3
@@ -1507,7 +1507,7 @@ unsigned int performActions(struct state s) {
                 resultingStates = applyFrAnd(s);
             }
             else if (protocolChosen == FR_XOR) {
-
+                resultingStates = applyFrXor(s);
             }
             else if (protocolChosen == LV_AND) {
 
