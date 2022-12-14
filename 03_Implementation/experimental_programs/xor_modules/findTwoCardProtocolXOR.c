@@ -1095,9 +1095,9 @@ struct turnStates applyTurn(struct state s) {
 */
 unsigned  int findIndex(struct sequence seq) {
     unsigned int index = 0;
-    for (int i; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+    for (int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
         unsigned int correct = 1;
-        for (int j; j < N; j++) {
+        for (int j = 0; j < N; j++) {
             if (seq.val[j] != emptyState.seq[i].val[j])
                 correct = 0;
         }
