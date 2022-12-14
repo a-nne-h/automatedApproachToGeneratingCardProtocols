@@ -1204,7 +1204,9 @@ struct protocolStates copyResults(struct sequence seq, struct protocolStates res
     for (unsigned int j = 0; j < NUMBER_PROBABILITIES; j++) {
         struct fraction prob = seq.probs.frac[j];
         // Copy numerator.
-        result.states[resultIdx].seq[index].probs.frac[j].num = prob.num;
+	if (prob.num != 0) {
+            result.states[resultIdx].seq[index].probs.frac[j].num = prob.num;
+	}
         if (!WEAK_SECURITY) { // Probabilistic security
             // Copy denominator.
             result.states[resultIdx].seq[index].probs.frac[j].den = prob.den;
