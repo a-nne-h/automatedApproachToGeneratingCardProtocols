@@ -112,7 +112,7 @@ void __CPROVER_assert(int x, char y[]);
 #endif
 
  /**
- * Number assigned to AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
+ * Number assigned to protocol execution action.
  */
 #ifndef PROTOCOL
 #define PROTOCOL 2
@@ -170,7 +170,6 @@ void __CPROVER_assert(int x, char y[]);
 
 
 /**
-* ATTENTION: this will have to be replaced
 * whether the protcol
 * OR by myself -> Las Vegas, 4 cards, 6 steps
 * is used (0: not used, 1: used)
