@@ -213,7 +213,7 @@ void __CPROVER_assert(int x, char y[]);
  * If set to 1, only closed protocols with closed shuffles will be searched.
  */
 #ifndef CLOSED_PROTOCOL
-#define CLOSED_PROTOCOL 0
+#define CLOSED_PROTOCOL 1
 #endif
 
 /**
@@ -1121,7 +1121,9 @@ struct protocolStates copyResults(struct sequence seq, struct protocolStates res
     for (unsigned int j = 0; j < NUMBER_PROBABILITIES; j++) {
         struct fraction prob = seq.probs.frac[j];
         // Copy numerator.
-        result.states[resultIdx].seq[index].probs.frac[j].num = prob.num;
+        if (prob.num != 0) {
+            result.states[resultIdx].seq[index].probs.frac[j].num = prob.num;
+        }
         if (!WEAK_SECURITY) { // Probabilistic security
             // Copy denominator.
             result.states[resultIdx].seq[index].probs.frac[j].den = prob.den;
