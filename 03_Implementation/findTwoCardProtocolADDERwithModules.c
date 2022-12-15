@@ -84,7 +84,7 @@ void __CPROVER_assert(int x, char y[]);
 * 1: modules are used
 */
 #ifndef MODULES
-#define MODULES 0
+#define MODULES 1
 #endif
 
 
@@ -125,7 +125,7 @@ void __CPROVER_assert(int x, char y[]);
 * is used (0: not used, 1: used)
 */
 #ifndef USE_FR_AND
-#define USE_FR_AND 0
+#define USE_FR_AND 1
 #endif 
 
 /**
@@ -142,7 +142,7 @@ void __CPROVER_assert(int x, char y[]);
  * is used (0: not used, 1: used)
  */
 #ifndef USE_FR_XOR
-#define USE_FR_XOR 0
+#define USE_FR_XOR 1
 #endif 
 
  /**

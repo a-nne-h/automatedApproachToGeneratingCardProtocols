@@ -20,7 +20,7 @@ START_PRINT=`echo -e "$START" | sed -e 's/\s/\_/g' | sed -e 's/\-/\_/g' | sed -e
 START_SEC=$(date +%s)
 TIMESTAMP="# Timestamp: "$START
 CBMC='./cbmc'
-FILE="findTwoCardProtocolADDER.c"
+FILE="findTwoCardProtocolADDERwithModules.c"
 HOST=`echo -e $(hostname)`
 TRACE_OPTS='--compact-trace --trace-hex'
 TIMEOUT="5d"
@@ -28,7 +28,7 @@ N=$1
 LENGTH=$2
 OPT=$3
 NUM_SYM='2' # This is the setting where all cards carry only two distinct symbols
-OUTFILE="twoCardProtocolADDER_NO_MOD_n"$N"_l"$LENGTH"__"$HOST"_"$START_PRINT".out"
+OUTFILE="twoCardProtocolADDER"$N"_l"$LENGTH"__"$HOST"_"$START_PRINT".out"
 
 OPTS=''
 while [ -n "$3" ]
