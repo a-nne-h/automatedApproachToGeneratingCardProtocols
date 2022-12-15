@@ -137,6 +137,7 @@ void __CPROVER_assert(int x, char y[]);
 #ifndef FR_XOR
 #define FR_XOR 1
 #endif 
+
  /**
  * whether the protcol
  * AND by Koch et al (2021) -> Las Vegas, 5 cards, 5 steps
@@ -147,7 +148,7 @@ void __CPROVER_assert(int x, char y[]);
 #endif 
 
  /**
- * AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
+ * AND by Koch et al (2021) -> Las Vegas, 5 cards, 5 steps
  */
 #ifndef LV_AND
 #define LV_AND 2
@@ -1094,19 +1095,13 @@ struct turnStates applyTurn(struct state s) {
 * finds the index of a given sequence (as an array) within a state.
 */
 unsigned  int findIndex(struct sequence seq) {
-    unsigned int index = 0;
-    for (int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
-        unsigned int correct = 1;
-        for (int j = 0; j < N; j++) {
-            if (seq.val[j] != emptyState.seq[i].val[j])
-                correct = 0;
-        }
-        if (correct) {
-            index = i;
-        }
+    unsigned int index = nondet_uint();
+    for (int j = 0; j < N; j++) {
+        assume(seq.val[j] != emptyState.seq[index].val[j]);
     }
     return index;
 }
+
 /**
 * MODULES:
 * searches for the endSequence in result.states[resultIdx]
