@@ -1280,7 +1280,7 @@ struct protocolStates applyFrXor(struct state s) {
 
             // check that throughout every possible sequence in the state we have chosen two different cards for our commitments
             assume(s.seq[i].val[com1A] != s.seq[i].val[com1B]);
-            assume(s.seq[i].val[com2A] != s.seq[i].val[com2B])
+            assume(s.seq[i].val[com2A] != s.seq[i].val[com2B]);
         }
     }
 
@@ -1410,7 +1410,7 @@ struct protocolStates applyFrAnd(struct state s) {
 
             // check that througout every possible sequence in the state we have chosen two different cards for our commitments
             assume(s.seq[i].val[com1A] != s.seq[i].val[com1B]);
-            assume(s.seq[i].val[com2A] != s.seq[i].val[com2B])
+            assume(s.seq[i].val[com2A] != s.seq[i].val[com2B]);
         }
     }
     struct protocolStates result = doFrAnd(s, com1A, com1B, com2A, com2B, help1, help2);
