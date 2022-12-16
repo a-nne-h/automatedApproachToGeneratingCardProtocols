@@ -1274,6 +1274,16 @@ struct protocolStates applyFrXor(struct state s) {
     assume(com1B != com2A && com1B != com2B);
     assume(com2A != com2B);
 
+    for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+        // if the probability/possibility of this state is not 0 
+        if (isStillPossible(s.seq[i].probs)) {
+
+            // check that throughout every possible sequence in the state we have chosen two different cards for our commitments
+            assume(s.seq[i].val[com1A] != s.seq[i].val[com1B]);
+            assume(s.seq[i].val[com2A] != s.seq[i].val[com2B])
+        }
+    }
+
     struct protocolStates result = doFrXor(s, com1A, com1B, com2A, com2B);
     // check for security? s. apply Turn -> not really necessary because we assume that the protocol is secure
     return result;
@@ -1391,11 +1401,16 @@ struct protocolStates applyFrAnd(struct state s) {
     assume(help1 < N&& help2 < N);
     assume(help1 != com1A && help1 != com1B && help1 != com2A && help1 != com2B);
     assume(help2 != com1A && help2 != com1B && help2 != com2A && help2 != com2B);
-    // check that helper cards are the same all througout every possible sequence in the state
     for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
         // if the probability/possibility of this state is not 0 
         if (isStillPossible(s.seq[i].probs)) {
+            
+            // check that helper cards are the same all throughout every possible sequence in the state
             assume(isZero((s.seq[i].val[help1]), s.seq[i].val[help2]));
+
+            // check that througout every possible sequence in the state we have chosen two different cards for our commitments
+            assume(s.seq[i].val[com1A] != s.seq[i].val[com1B]);
+            assume(s.seq[i].val[com2A] != s.seq[i].val[com2B])
         }
     }
     struct protocolStates result = doFrAnd(s, com1A, com1B, com2A, com2B, help1, help2);
