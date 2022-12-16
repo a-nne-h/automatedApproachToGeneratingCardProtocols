@@ -1257,6 +1257,9 @@ struct protocolStates doFrXor(struct state s, unsigned int com1A, unsigned int c
             result.isUsed[1] = 1;
         }
     }
+    for (int l = 0; l < 2, l++) {
+        isBottomFree(result.states[l]);
+    }
     return result;
 }
 
@@ -1361,7 +1364,9 @@ struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int c
             result.isUsed[1] = 1;
         }
     }
-
+    for (int l = 0; l < 2, l++) {
+        isBottomFree(result.states[l]);
+    }
     return result;
 }
 
@@ -1507,8 +1512,7 @@ unsigned int performActions(struct state s) {
             }
             else if (protocolChosen == LV_OR) {
 
-            }
-
+            }           
             //as with TURN, choose one output nondeterministically to look at further
             unsigned int stateIdx = nondet_uint();
             assume(stateIdx < MAX_PROTOCOL_ENDSTATES);
