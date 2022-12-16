@@ -1257,7 +1257,7 @@ struct protocolStates doFrXor(struct state s, unsigned int com1A, unsigned int c
             result.isUsed[1] = 1;
         }
     }
-    for (int l = 0; l < 2, l++) {
+    for (unsigned int l = 0; l < 2; l++) {
         isBottomFree(result.states[l]);
     }
     return result;
@@ -1364,7 +1364,7 @@ struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int c
             result.isUsed[1] = 1;
         }
     }
-    for (int l = 0; l < 2, l++) {
+    for (unsigned int l = 0; l < 2; l++) {
         isBottomFree(result.states[l]);
     }
     return result;
