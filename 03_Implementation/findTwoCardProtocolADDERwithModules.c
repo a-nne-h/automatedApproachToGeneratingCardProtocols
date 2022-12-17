@@ -1258,7 +1258,7 @@ struct protocolStates doFrXor(struct state s, unsigned int com1A, unsigned int c
         }
     }
     for (unsigned int l = 0; l < 2; l++) {
-        isBottomFree(result.states[l]);
+        assume(isBottomFree(result.states[l]));
     }
     return result;
 }
@@ -1375,7 +1375,7 @@ struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int c
         }
     }
     for (unsigned int l = 0; l < 2; l++) {
-        isBottomFree(result.states[l]);
+        assume(isBottomFree(result.states[l]));
     }
     return result;
 }
