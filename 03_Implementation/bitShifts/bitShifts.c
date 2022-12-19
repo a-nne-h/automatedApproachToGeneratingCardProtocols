@@ -22,42 +22,90 @@ void __CPROVER_assert(int x, char y[]);
 #define assert2(x, y) __CPROVER_assert(x, y)
 #define assume(x) __CPROVER_assume(x)
 
-
 /**
- * Size of input sequence (number of cards including both commitments plus additional cards).
+ * Amount of distinguishable card symbols.
  */
+#ifndef NUM_SYM
+#define NUM_SYM 2
+#endif
+
+ /**
+  * Size of input sequence (number of cards including both commitments plus additional cards).
+  */
 #ifndef N
 #define N 4
 #endif
 
- /**
-  * Maximum number of sequences (usually N!).
-  * This value can be lowered if there are multiple indistinguishable symbols in the deck.
-  * This variable is used for over-approximating loops such that
-  * their unrolling bound can be statically determined.
-  */
-#ifndef NUMBER_POSSIBLE_SEQUENCES
-#define NUMBER_POSSIBLE_SEQUENCES 24
+  /**
+   * Number of all cards used for commitments
+   */
+#ifndef COMMIT
+#define COMMIT 4
 #endif
 
- /**
-  * Maximum number of permutations fpr the given number of cards (N!).
-  * This value has to be computed by our script, or adjusted manually.
-  */
+   /**
+    * Maximum number of sequences (usually N!).
+    * This value can be lowered if there are multiple indistinguishable symbols in the deck.
+    * This variable is used for over-approximating loops such that
+    * their unrolling bound can be statically determined.
+    */
+#ifndef NUMBER_POSSIBLE_SEQUENCES
+#define NUMBER_POSSIBLE_SEQUENCES 6
+#endif
+
+    /**
+     * For two players inserting yes or no to a protocol,
+     * there are four different possibilities how the protocol could start.
+     * For more players or other scenarios this value has to be adapted.
+     */
+#ifndef NUMBER_START_SEQS
+#define NUMBER_START_SEQS 4
+#endif
+
+
+     /**
+      * Maximum number of permutations fpr the given number of cards (N!).
+      * This value has to be computed by our script, or adjusted manually.
+      */
 #ifndef NUMBER_POSSIBLE_PERMUTATIONS
 #define NUMBER_POSSIBLE_PERMUTATIONS 24
 #endif
 
-  /**
-   * We always had four input possibilities,
-   * this is changed if we only consider output possibilistic security.
-   * This variable is used for over-approximating loops such that
-   * their unrolling bound can be statically determined.
-   */
+
+      /**
+       * Regarding possibilities for a sequence, we (only) consider
+       * - 0: probabilistic security
+       *      (exact possibilities for a sequence)
+       * - 1: input possibilistic security (yes or no)
+       *      (whether the sequence can belong to the specific input)
+       * - 2: output possibilistic security (yes or no)
+       *      (to which output the sequence can belong)
+       */
+#ifndef WEAK_SECURITY
+#define WEAK_SECURITY 2
+#endif
+
+
+       /**
+        * We always had four input possibilities,
+        * this is changed if we only consider output possibilistic security.
+        * This variable is used for over-approximating loops such that
+        * their unrolling bound can be statically determined.
+        */
 #if WEAK_SECURITY == 2
 #define NUMBER_PROBABILITIES 2
 #else
 #define NUMBER_PROBABILITIES 4
+#endif
+
+        /**
+         * This variable is used to limit the permutation set in any shuffle.
+         * This can reduce the running time of this program.
+         * When reducing this Variable, keep in mind that it could exclude some valid protocols,
+         * as some valid permutation sets are not longer considered.
+         */
+#ifndef MAX_PERM_SET_SIZE
+#define MAX_PERM_SET_SIZE NUMBER_POSSIBLE_PERMUTATIONS
 #endif
 
 struct fraction {
@@ -115,9 +163,9 @@ struct state {
     struct sequence seq[NUMBER_POSSIBLE_SEQUENCES];
 };
 
-   /**
-    * All permutations are remembered here, as seen from left to right, sorted alphabetically.
-    */
+/**
+ * All permutations are remembered here, as seen from left to right, sorted alphabetically.
+ */
 struct permutationState {
     struct sequence seq[NUMBER_POSSIBLE_PERMUTATIONS];
 };
@@ -128,10 +176,22 @@ struct permutationState {
 struct permutationState stateWithAllPermutations;
 
 /**
+ * We store one empty state at beginning of the program to save ressources.
+ */
+struct state emptyState;
+
+/**
  * An integer array with length N.
  */
 struct narray {
     unsigned int arr[N];
+};
+
+/**
+ * An integer array with length NUM_SYM.
+ */
+struct numsymarray {
+    unsigned int arr[NUM_SYM];
 };
 
 
