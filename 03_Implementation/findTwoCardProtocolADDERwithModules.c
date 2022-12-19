@@ -1283,11 +1283,12 @@ struct protocolStates applyFrXor(struct state s) {
             assume(s.seq[i].val[com2A] != s.seq[i].val[com2B]);
         }
     }
-
+    
     struct protocolStates result = doFrXor(s, com1A, com1B, com2A, com2B);
+
     // check for security? s. apply Turn -> not really necessary because we assume that the protocol is secure
     if (WEAK_SECURITY) { // Weaker security check: output-possibilistic or input-possibilistic.
-        for (unsigned int stateNumber = 0; stateNumber < MAX_TURN_OBSERVATIONS; stateNumber++) {
+        for (unsigned int stateNumber = 0; stateNumber < MAX_PROTOCOL_ENDSTATES; stateNumber++) {
             if (result.isUsed[stateNumber]) {
                 struct state resultState = result.states[stateNumber];
                 // Now nondeterministic. We only need to find one sequence for
@@ -1302,8 +1303,8 @@ struct protocolStates applyFrXor(struct state s) {
         }
     }
     else { // Probabilistic security.
-        struct fractions probs = computeTurnProbabilities(result);
-        result = alignAndAssignFractions(result, probs);
+        //struct fractions probs = computeTurnProbabilities(result);
+        //result = alignAndAssignFractions(result, probs);
     }
     
     return result;
