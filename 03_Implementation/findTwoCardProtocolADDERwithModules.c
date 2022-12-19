@@ -1180,6 +1180,7 @@ unsigned  int findIndex(struct sequence seq) {
     for (int j = 0; j < N; j++) {
         assume(seq.val[j] != emptyState.seq[index].val[j]);
     }
+    return index;
 }
 /**
 * MODULES:
