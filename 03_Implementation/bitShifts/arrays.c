@@ -60,6 +60,16 @@ void __CPROVER_assert(int x, char y[]);
 #define NUMBER_PROBABILITIES 4
 #endif
 
+   /**
+    * This variable is used to limit the permutation set in any shuffle.
+    * This can reduce the running time of this program.
+    * When reducing this Variable, keep in mind that it could exclude some valid protocols,
+    * as some valid permutation sets are not longer considered.
+    */
+#ifndef MAX_PERM_SET_SIZE
+#define MAX_PERM_SET_SIZE NUMBER_POSSIBLE_PERMUTATIONS
+#endif
+
 struct fraction {
     unsigned int num; // The numerator.
     unsigned int den; // The denominator.
@@ -174,6 +184,124 @@ struct permutationState getStateWithAllPermutations() {
         assume(checked);
     }
     return s;
+}
+
+/**
+ * Given an array containing a sequence, we return the index of the given sequence in a state.
+ */
+unsigned int getSequenceIndexFromArray(struct narray compare, struct state compareState) {
+    unsigned int seqIdx = nondet_uint();
+    assume(seqIdx < NUMBER_POSSIBLE_SEQUENCES);
+    struct sequence seq = compareState.seq[seqIdx];
+
+    for (unsigned int i = 0; i < N; i++) {
+        assume(compare.arr[i] == seq.val[i]);
+    }
+    return seqIdx;
+}
+
+/**
+ * Update the possibilities of a sequence after a shuffle.
+ */
+struct fractions recalculatePossibilities(struct fractions probs,
+    struct fractions resProbs,
+    unsigned int permSetSize) {
+    for (unsigned int k = 0; k < NUMBER_PROBABILITIES; k++) {
+        struct fraction prob = probs.frac[k];
+        unsigned int num = prob.num;
+        unsigned int denom = prob.den;
+
+        if (num && WEAK_SECURITY) {
+            resProbs.frac[k].num |= num;
+        }
+        else if (num) {
+            /**
+             * Only update fractions in case we are in the
+             * strong security setup.
+             */
+             // Update denominator.
+            resProbs.frac[k].den = denom * permSetSize;
+            // Update numerator.
+            resProbs.frac[k].num = (num * permSetSize) + denom;
+        }
+    }
+    return resProbs;
+}
+
+// emptyState; (isStillPossible);
+/**
+ * Calculate the state after a shuffle operation starting from s with the given permutation set.
+ * 
+ * Deleted isStillPossible
+ */
+struct state doShuffle(struct state s,
+    unsigned int permutationSet[MAX_PERM_SET_SIZE][N],
+    unsigned int permSetSize) {
+    struct state res = emptyState;
+    // For every sequence in the input state.
+    for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+            // For every permutation in the permutation set.
+            for (unsigned int j = 0; j < MAX_PERM_SET_SIZE; j++) {
+                if (j < permSetSize) {
+                    struct narray resultingSeq = { .arr = { 0 } };
+                    for (unsigned int k = 0; k < N; k++) {
+                        // Apply permutation j to sequence i.
+                        resultingSeq.arr[permutationSet[j][k]] = s.seq[i].val[k];
+                    }
+                    unsigned int resultSeqIndex = // Get the index of the resulting sequence.
+                        getSequenceIndexFromArray(resultingSeq, res);
+                    // Recalculate possibilities.
+                    res.seq[resultSeqIndex].probs =
+                        recalculatePossibilities(s.seq[i].probs,
+                            res.seq[resultSeqIndex].probs,
+                            permSetSize);
+                }
+            }
+    }
+    return res;
+}
+
+struct state applyShuffle(struct state s) {
+    // Generate permutation set (shuffles are assumed to be uniformly distributed).
+    unsigned int permSetSize = nondet_uint();
+    assume(0 < permSetSize && permSetSize <= MAX_PERM_SET_SIZE);
+
+    unsigned int permutationSet[MAX_PERM_SET_SIZE][N] = { 0 };
+    unsigned int takenPermutations[NUMBER_POSSIBLE_PERMUTATIONS] = { 0 };
+    /**
+     * Choose permSetSize permutations nondeterministically. To achieve this,
+     * generate a nondeterministic permutation index and get the permutation from this index.
+     * No permutation can be chosen multiple times.
+     */
+    unsigned int lastChosenPermutationIndex = 0;
+    for (unsigned int i = 0; i < MAX_PERM_SET_SIZE; i++) {
+        if (i < permSetSize) { // Only generate permutations up to permSetSize.
+            unsigned int permIndex = nondet_uint();
+            // This ensures that the permutation sets are sorted lexicographically.
+            assume(lastChosenPermutationIndex <= permIndex);
+            assume(permIndex < NUMBER_POSSIBLE_PERMUTATIONS);
+            assume(!takenPermutations[permIndex]);
+
+            takenPermutations[permIndex] = 1;
+            lastChosenPermutationIndex = permIndex;
+
+            for (unsigned int j = 0; j < N; j++) {
+                permutationSet[i][j] = stateWithAllPermutations.seq[permIndex].val[j] - 1;
+                /**
+                 * The '-1' is important. Later, we convert to array indices such as
+                 * array[permutationSet[x][y]]. Without the '-1', we would get out-
+                 * of-bound errors there.
+                 */
+            }
+        }
+    }
+    struct state res = doShuffle(s, permutationSet, permSetSize);
+    return res;
+}
+
+struct state tryPermutation(struct state s) {
+    struct state res = applyShuffle(s);
+
 }
 
 int main() {
