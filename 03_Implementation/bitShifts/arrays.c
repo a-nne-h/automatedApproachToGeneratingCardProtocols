@@ -22,6 +22,12 @@ void __CPROVER_assert(int x, char y[]);
 #define assert2(x, y) __CPROVER_assert(x, y)
 #define assume(x) __CPROVER_assume(x)
 
+/**
+ * Amount of distinguishable card symbols.
+ */
+#ifndef NUM_SYM
+#define NUM_SYM 2
+#endif
 
 /**
  * Size of input sequence (number of cards including both commitments plus additional cards).
@@ -31,14 +37,31 @@ void __CPROVER_assert(int x, char y[]);
 #endif
 
  /**
+  * Number of all cards used for commitments
+  */
+#ifndef COMMIT
+#define COMMIT 4
+#endif
+
+ /**
   * Maximum number of sequences (usually N!).
   * This value can be lowered if there are multiple indistinguishable symbols in the deck.
   * This variable is used for over-approximating loops such that
   * their unrolling bound can be statically determined.
   */
 #ifndef NUMBER_POSSIBLE_SEQUENCES
-#define NUMBER_POSSIBLE_SEQUENCES 24
+#define NUMBER_POSSIBLE_SEQUENCES 6
 #endif
+
+  /**
+   * For two players inserting yes or no to a protocol,
+   * there are four different possibilities how the protocol could start.
+   * For more players or other scenarios this value has to be adapted.
+   */
+#ifndef NUMBER_START_SEQS
+#define NUMBER_START_SEQS 4
+#endif
+
 
  /**
   * Maximum number of permutations fpr the given number of cards (N!).
@@ -47,6 +70,21 @@ void __CPROVER_assert(int x, char y[]);
 #ifndef NUMBER_POSSIBLE_PERMUTATIONS
 #define NUMBER_POSSIBLE_PERMUTATIONS 24
 #endif
+
+
+  /**
+   * Regarding possibilities for a sequence, we (only) consider
+   * - 0: probabilistic security
+   *      (exact possibilities for a sequence)
+   * - 1: input possibilistic security (yes or no)
+   *      (whether the sequence can belong to the specific input)
+   * - 2: output possibilistic security (yes or no)
+   *      (to which output the sequence can belong)
+   */
+#ifndef WEAK_SECURITY
+#define WEAK_SECURITY 2
+#endif
+
 
   /**
    * We always had four input possibilities,
@@ -138,12 +176,23 @@ struct permutationState {
 struct permutationState stateWithAllPermutations;
 
 /**
+ * We store one empty state at beginning of the program to save ressources.
+ */
+struct state emptyState;
+
+/**
  * An integer array with length N.
  */
 struct narray {
     unsigned int arr[N];
 };
 
+/**
+ * An integer array with length NUM_SYM.
+ */
+struct numsymarray {
+    unsigned int arr[NUM_SYM];
+};
 
 
 struct permutationState getStateWithAllPermutations() {
@@ -228,7 +277,6 @@ struct fractions recalculatePossibilities(struct fractions probs,
     return resProbs;
 }
 
-// emptyState; (isStillPossible);
 /**
  * Calculate the state after a shuffle operation starting from s with the given permutation set.
  * 
@@ -302,14 +350,195 @@ struct state applyShuffle(struct state s) {
 struct state tryPermutation(struct state s) {
     struct state res = applyShuffle(s);
 
+    // check if every possibility is 1 after shuffle
+    for (int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+        for (int j = 0; j < NUMBER_PROBABILITIES; j++) {
+            assume(res.seq[i].probs.frac[j].num != 0);
+        }
+    }
+    return s;
 }
 
+
+
+
+
+
+
+
+
+/**
+ * Constructor for states. Only use this to create new states.
+ */
+struct state getEmptyState() {
+    struct state s;
+    struct numsymarray symbolCount;
+    for (unsigned int i = 0; i < NUM_SYM; i++) {
+        symbolCount.arr[i] = 0;
+    }
+
+    for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+        struct numsymarray taken;
+        for (unsigned int j = 0; j < NUM_SYM; j++) {
+            taken.arr[j] = 0;
+        }
+        for (unsigned int j = 0; j < N; j++) {
+            s.seq[i].val[j] = nondet_uint();
+            unsigned int val = s.seq[i].val[j];
+            assume(0 < val && val <= NUM_SYM);
+            unsigned int idx = val - 1;
+            taken.arr[idx]++;
+            assume(taken.arr[idx] <= N - 2); // At least two symbols have to be different. Players cannot commit otherwise.
+        }
+        for (unsigned int j = 0; j < NUM_SYM; j++) {
+            if (i == 0) {
+                symbolCount.arr[j] = taken.arr[j];
+            }
+            else { // We ensure that every sequence consists of the same symbols
+                assume(taken.arr[j] == symbolCount.arr[j]);
+            }
+        }
+
+        // Here we store the numerators and denominators
+        for (unsigned int j = 0; j < NUMBER_PROBABILITIES; j++) {
+            s.seq[i].probs.frac[j].num = 0;
+            s.seq[i].probs.frac[j].den = 1;
+        }
+    }
+
+    for (unsigned int i = 1; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+        unsigned int checked = 0;
+        unsigned int last = i - 1;
+        for (unsigned int j = 0; j < N; j++) {
+            // Check lexicographic order
+            unsigned int a = s.seq[last].val[j];
+            unsigned int f = s.seq[i].val[j];
+            checked |= (a < f);
+            assume(checked || a == f);
+        }
+        assume(checked);
+    }
+    return s;
+}
+
+
+/**
+ * One bit is represented by two cards, a and b.
+ * If the first card is lower than the second card, the bit represents the value "0"
+ * If the first card is higher than the second card, the bit represents the value "1"
+ * Note that if both cards are equal, the bit is "undefined".
+ * This must not happen in our implementation, but must be considered for multiple
+ * indistinguishable cards.
+ */
+unsigned int isZero(unsigned int a, unsigned int b) {
+    return a < b;
+}
+
+/**
+ * See description of isZero(uint, uint) above.
+ */
+unsigned int isOne(unsigned int a, unsigned int b) {
+    return a > b;
+}
+
+
+/**
+ * Determine if a sequence in the start state belongs to the input possibility (0 0).
+ */
+unsigned int isZeroZero(unsigned int arr[N]) {
+    return isZero(arr[0], arr[1]) && isZero(arr[2], arr[3]);
+}
+
+/**
+ * Determine if a sequence in the start state belongs to the input possibility (0 1).
+ */
+unsigned int isZeroOne(unsigned int arr[N]) {
+    return isZero(arr[0], arr[1]) && isOne(arr[2], arr[3]);
+}
+
+/**
+ * Determine if a sequence in the start state belongs to the input possibility (1 0).
+ */
+unsigned int isOneZero(unsigned int arr[N]) {
+    return isOne(arr[0], arr[1]) && isZero(arr[2], arr[3]);
+}
+
+/**
+ * Determine if a sequence in the start state belongs to the input possibility (1 1).
+ */
+unsigned int isOneOne(unsigned int arr[N]) {
+    return isOne(arr[0], arr[1]) && isOne(arr[2], arr[3]);
+}
+
+/**
+ * This method constructs the start sequence for a given commitment length COMMIT
+ * using nodeterministic assignments. We only consider the case where Alice uses
+ * the cards "1" and "2", and Bob uses the cards "3" and "4".
+ */
+struct narray getStartSequence() {
+    assume(N >= COMMIT); // We assume at least as many cards as needed for the commitments.
+    struct numsymarray taken;
+    for (unsigned int i = 0; i < NUM_SYM; i++) {
+        taken.arr[i] = 0;
+    }
+    struct narray res;
+    for (unsigned int i = 0; i < COMMIT; i++) {
+        res.arr[i] = nondet_uint();
+        unsigned int val = res.arr[i];
+        assume(0 < val && val <= COMMIT && val <= NUM_SYM);
+        unsigned int idx = val - 1;
+        assume(taken.arr[idx] < COMMIT / NUM_SYM);
+        taken.arr[idx]++;
+    }
+    // Here we assume that each player only uses fully distinguishable cards
+    assume(res.arr[1] != res.arr[0]);
+    assume(res.arr[3] != res.arr[2]);
+    for (unsigned int i = COMMIT; i < N; i++) {
+        res.arr[i] = nondet_uint();
+        assume(0 < res.arr[i]);
+        assume(res.arr[i] <= NUM_SYM);
+    }
+    return res;
+}
+
+
 int main() {
+    
+    emptyState = getEmptyState();
+    struct state startState = emptyState;
+    struct narray start[NUMBER_START_SEQS];
+    for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
+        start[i] = getStartSequence();
+    }
+
+    assume(isZeroZero(start[0].arr));
+    assume(NUMBER_START_SEQS == 4);
+    assume(start[0].arr[0] == start[1].arr[0]);
+    assume(start[1].arr[0] != start[2].arr[0]);
+    assume(start[2].arr[0] == start[3].arr[0]);
+
+    assume(start[0].arr[2] == start[2].arr[2]);
+    assume(start[0].arr[2] != start[1].arr[2]);
+    assume(start[1].arr[2] == start[3].arr[2]);
+
+    unsigned int arrSeqIdx[NUMBER_START_SEQS];
+    for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
+        arrSeqIdx[i] = getSequenceIndexFromArray(start[i], startState);
+    }
+
+    for (unsigned int i = 0; i < (NUMBER_START_SEQS -1); i++) {       
+        startState.seq[arrSeqIdx[i]].probs.frac[0].num = 1;
+    }
+
+    unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
+    unsigned int arrIdx = arrSeqIdx[lastStartSeq];
+    unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
+    startState.seq[arrIdx].probs.frac[lastProbIdx].num = isOneOne(start[lastStartSeq].arr);
+
     stateWithAllPermutations = getStateWithAllPermutations();
-    unsigned int index = nondet_uint();
-    unsigned int val = nondet_uint();
-    assume(val < N);
-    assume(index < NUMBER_POSSIBLE_SEQUENCES);
-    assert(stateWithAllPermutations.seq[index].val[val] != 0);
+
+    tryPermutation(startState);
+    //tryPermutations ()
+    assert(0);
     return 0;
 }
