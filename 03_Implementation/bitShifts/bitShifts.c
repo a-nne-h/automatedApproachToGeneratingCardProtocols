@@ -337,7 +337,7 @@ struct state applyShuffle(struct state s) {
     // Generate permutation set (shuffles are assumed to be uniformly distributed).
     unsigned int permSetSize = nondet_uint();
     assume(0 < permSetSize && permSetSize <= MAX_PERM_SET_SIZE);
-
+    
     unsigned int permutationSet[MAX_PERM_SET_SIZE][N] = { 0 };
     unsigned int takenPermutations[NUMBER_POSSIBLE_PERMUTATIONS] = { 0 };
     /**
@@ -373,7 +373,7 @@ struct state applyShuffle(struct state s) {
 
 struct state tryPermutation(struct state s) {
     struct state res = applyShuffle(s);
-
+   
     // check if every possibility is 1 after shuffle
     for (int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
         for (int j = 0; j < NUMBER_PROBABILITIES; j++) {
@@ -401,13 +401,16 @@ struct state getEmptyState() {
             taken.arr[j] = 0;
         }
 
-        s.seq[i].val = nondet_uint();
+        //s.seq[i].val = nondet_uint();
+        char value = 0;
         for (unsigned int j = 0; j < N; j++) {
-            unsigned int val = s.seq[i].val | (1 << (N - 1 - j));
+            char val = nondet_uint();
             assume(0 <= val && val <= 1);
             taken.arr[val]++;
             assume(taken.arr[val] <= N - 2); // At least two symbols have to be different. Players cannot commit otherwise.
+            value = value | (val << (N - 1 - j));
         }
+        s.seq[i].val = value;
         
         for (unsigned int j = 0; j < NUM_SYM; j++) {
             if (i == 0) {
@@ -417,7 +420,7 @@ struct state getEmptyState() {
                 assume(taken.arr[j] == symbolCount.arr[j]);
             }
         }
-        
+
         // Here we store the numerators and denominators
         for (unsigned int j = 0; j < NUMBER_PROBABILITIES; j++) {
             s.seq[i].probs.frac[j].num = 0;
@@ -427,13 +430,13 @@ struct state getEmptyState() {
     for (unsigned int i = 1; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
         unsigned int checked = 0;
         unsigned int last = i - 1;
-        //for (unsigned int j = 1; j <= N; j++) {
-        //    // Check lexicographic order
-        //    char a = (s.seq[last].val & (1 << N - j);
-        //    char f = (s.seq[i].val & (1 << N - j);
-        //    checked |= (a < f);
-        //    assume(checked || a == f);
-        //}
+        for (unsigned int j = 1; j <= N; j++) {
+            // Check lexicographic order
+            char a = (s.seq[last].val & (1 << N - j));
+            char f = (s.seq[i].val & (1 << N - j));
+            checked |= (a < f);
+            assume(checked || a == f);
+        }
         assume(checked);
     }
     return s;
@@ -445,11 +448,19 @@ struct state getEmptyState() {
 /**
  * Determine if a sequence in the start state belongs to the input possibility (0 0).
  */
+
 unsigned int isZeroZero(char sequence) {
-    for (int i = 1; i <= 4; i++) {
-        if (sequence & (1 << (N - i))) {
-            return 0;
-        }
+    if(sequence & (1 << (N - 1))) {
+        return 0;
+    }
+    if (!(sequence & (1 << (N - 2)))) {
+        return 0;
+    }
+    if (sequence & (1 << (N - 3))) {
+        return 0;
+    }
+    if (!(sequence & (1 << (N - 4)))) {
+        return 0;
     }
     return 1;
 }
@@ -495,8 +506,8 @@ char getStartSequence() {
         res = res | (card << (N - 1 - i));
     }
     // Here we assume that each player only uses fully distinguishable cards
-    assume((res & 1 << N-1) != ((res & 1 << N - 2 )<<1));
-    assume((res & 1 << N - 3) != ((res & 1 << N - 4) << 1));
+    assume((res & 1 << (N - 1)) != ((res & 1 << (N - 2))<<1));
+    assume((res & 1 << (N - 3)) != ((res & 1 << (N - 4)) << 1));
 
     // rest of cards
     for (unsigned int i = COMMIT; i < N; i++) {
@@ -518,14 +529,17 @@ int main() {
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
         start[i] = getStartSequence();
     }
+    //assume(isZeroZero(start[0]));
+
     assume(isZeroZero(start[0]));
+
     assume(!((start[0] & (1 << N - 1)) ^ (start[1] & (1 << N - 1))));
     assume((start[1] & (1 << N - 1)) ^ (start[2] & (1 << N - 1)));
     assume(!((start[2] & (1 << N - 1)) ^ (start[3] & (1 << N - 1))));
 
-    assume(!((start[0] & (1 << N - 3)) ^ (start[1] & (1 << N - 3))));
-    assume((start[1] & (1 << N - 3)) ^ (start[2] & (1 << N - 3)));
-    assume(!((start[2] & (1 << N - 3)) ^ (start[3] & (1 << N - 3))));
+    assume(!((start[0] & (1 << N - 3)) ^ (start[2] & (1 << N - 3))));
+    assume((start[0] & (1 << N - 3)) ^ (start[1] & (1 << N - 3)));
+    assume(!((start[1] & (1 << N - 3)) ^ (start[3] & (1 << N - 3))));
 
     unsigned int arrSeqIdx[NUMBER_START_SEQS];
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
