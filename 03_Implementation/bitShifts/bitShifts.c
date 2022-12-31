@@ -253,11 +253,21 @@ struct permutationState getStateWithAllPermutations() {
 * we have a char instead of an array for comparison
 */
 unsigned int getSequenceIndexFromArray(char compare, struct state compareState) {
+    //int idx = 0;
+    //for (int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+    //    char sequence = compareState.seq[i].val;
+    //    if (sequence == compare) {
+    //       idx = i;
+    //    }
+    //}
+    //return idx;
+    
     unsigned int seqIdx = nondet_uint();
     assume(seqIdx < NUMBER_POSSIBLE_SEQUENCES);
     struct sequence seq = compareState.seq[seqIdx];
-    assume(!(seq.val ^ compare)); // the chars are equal if XOR is 0 
+    assume((seq.val ^ compare)); // the chars are equal if XOR is 0 
     return seqIdx;
+    
 }
 
 /**
@@ -305,21 +315,9 @@ struct fractions recalculatePossibilities(struct fractions probs,
 struct state doShuffle(struct state s,
     unsigned int permutationSet[MAX_PERM_SET_SIZE][N],
     unsigned int permSetSize) {
-    assert(permSetSize != 1);
-    assert(permSetSize != 2);
-    assert(permSetSize != 3);
-    assert(permSetSize != 20);
-    assert(permSetSize != 10);
     struct state res = emptyState;
     // For every sequence in the input state.
     for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
-        assume(permSetSize == 10);
-        assert(i != 0);
-        assert(i != 1);
-        assert(i != 2);
-        assert(i != 3);
-        assert(i != 4);
-        assert(i != 5);
         struct sequence seq = s.seq[i];
         // For every permutation in the permutation set.
         for (unsigned int j = 0; j < MAX_PERM_SET_SIZE; j++) {
@@ -329,35 +327,25 @@ struct state doShuffle(struct state s,
                     char temp = 0;
                     // Apply permutation j to sequence i.
                     temp = seq.val & (1 << k);
-                    temp = temp << (permutationSet[j][k] - k);
+                    int index = permutationSet[j][k] - k;
+                    if (index >= 0) {
+                        temp = temp << (index);
+                    }
+                    else {
+                        temp = temp >> (-1 * index);
+                    }
                     resultingSeq = resultingSeq | temp;
                 }
-                assert(i != 1 || j != 9);
-                assert(i != 1 || j != 10);
-                assert(i != 1 || j != 11);
-                assert(i != 1 || j != 12);
-                assert(i != 1 || j != 24);
                 unsigned int resultSeqIndex = // Get the index of the resulting sequence.
                     getSequenceIndexFromArray(resultingSeq, res);
-                // Recalculate possibilities.
+                 //Recalculate possibilities.
                 res.seq[resultSeqIndex].probs =
-                    recalculatePossibilities(s.seq[i].probs,
+                    recalculatePossibilities(seq.probs,
                         res.seq[resultSeqIndex].probs,
-                        permSetSize);
-
+                        permSetSize);     
                 
-                assert(s.seq[i].probs.frac[1].num == 0);
-                assert((s.seq[i].probs.frac[0].num != 1) || (s.seq[i].probs.frac[1].num != 1));
-               
             }
-            assert(i != 1 || j != 9);
-            assert(i != 1 || j != 10);
-            assert(i != 1 || j != 11);
-            assert(i != 1 || j != 12);
-            assert(i != 1 || j != 13);
         }
-        assert(i != 0);
-        assert(i != 1);
     }
     return res;
 }
@@ -382,6 +370,7 @@ struct state applyShuffle(struct state s) {
             assume(lastChosenPermutationIndex <= permIndex);
             assume(permIndex < NUMBER_POSSIBLE_PERMUTATIONS);
             assume(!takenPermutations[permIndex]);
+            assume(permSetSize != 10);
 
             takenPermutations[permIndex] = 1;
             lastChosenPermutationIndex = permIndex;
@@ -396,19 +385,20 @@ struct state applyShuffle(struct state s) {
             }
         }
     }
-    
+
     struct state res = doShuffle(s, permutationSet, permSetSize);
+    //assert(permSetSize == 1);
     return res;
 }
 
 struct state tryPermutation(struct state s) {
     struct state res = applyShuffle(s);
    
-    assert(0);
+
     // check if every possibility is 1 after shuffle
     for (int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
         for (int j = 0; j < NUMBER_PROBABILITIES; j++) {
-            assume(res.seq[i].probs.frac[j].num == 0);
+            assume(res.seq[i].probs.frac[j].num != 0);
         }
     }
     return s;
@@ -586,10 +576,10 @@ int main() {
     unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
     startState.seq[arrIdx].probs.frac[lastProbIdx].num = isOneOne(start[lastStartSeq]);
 
-    assert(startState.seq[arrIdx].probs.frac[1].num == 1);
+
 
     stateWithAllPermutations = getStateWithAllPermutations();
-    assert(0);
+    //assert(0);
     tryPermutation(startState);
     assert(0);
     return 0;
