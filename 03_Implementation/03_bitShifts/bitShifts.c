@@ -265,7 +265,7 @@ unsigned int getSequenceIndexFromArray(char compare, struct state compareState) 
     unsigned int seqIdx = nondet_uint();
     assume(seqIdx < NUMBER_POSSIBLE_SEQUENCES);
     struct sequence seq = compareState.seq[seqIdx];
-    assume((seq.val ^ compare)); // the chars are equal if XOR is 0 
+    assume(!(seq.val ^ compare)); // the chars are equal if XOR is 0 
     return seqIdx;
     
 }
