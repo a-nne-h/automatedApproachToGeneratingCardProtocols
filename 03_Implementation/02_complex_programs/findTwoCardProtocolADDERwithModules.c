@@ -207,8 +207,8 @@ void __CPROVER_assert(int x, char y[]);
 * COPY by Takaaki Mizuki and Hideaki Sone (2009) with fixed amount of copies = 1 -> Finite Runtime, 6 cards, 2 steps
 * (https://doi.org/10.1007/978-3-642-02270-8_36)
 */
-#ifndef LV_COPY
-#define LV_COPY 3
+#ifndef FR_COPY
+#define FR_COPY 4
 #endif 
 
 /**
@@ -1545,6 +1545,7 @@ unsigned int performActions(struct state s) {
         }
         else if (action == PROTOCOL) {
             unsigned int protocolChosen = nondet_uint();
+            assume(protocolChosen >= 0 && protocolChosen < 5);
             if (USE_FR_AND == 0) {
                 assume(protocolChosen != FR_AND);
             }
@@ -1556,6 +1557,9 @@ unsigned int performActions(struct state s) {
             }
             if (USE_LV_OR == 0) {
                 assume(protocolChosen != LV_OR);
+            }
+            if (USE_FR_COPY == 0) {
+                assume(protocolChosen != FR_COPY);
             }
 
             struct protocolStates resultingStates;
@@ -1575,7 +1579,10 @@ unsigned int performActions(struct state s) {
             }
             else if (protocolChosen == LV_OR) {
 
-            }           
+            }
+            else if (protocolChosen == FR_COPY) {
+
+            }
             //as with TURN, choose one output nondeterministically to look at further
             unsigned int stateIdx = nondet_uint();
             assume(stateIdx < MAX_PROTOCOL_ENDSTATES);
