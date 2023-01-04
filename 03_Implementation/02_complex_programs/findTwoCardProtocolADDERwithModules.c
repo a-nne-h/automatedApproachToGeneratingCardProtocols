@@ -1569,10 +1569,10 @@ unsigned int performActions(struct state s) {
                 resultingStates.isUsed[i] = 0;
             }
             if (protocolChosen == FR_AND) {
-                resultingStates = applyFrAnd(s);
+                resultingStates = applyFrAnd(reachableStates[i]);
             }
             else if (protocolChosen == FR_XOR) {
-                resultingStates = applyFrXor(s);
+                resultingStates = applyFrXor(reachableStates[i]);
             }
             else if (protocolChosen == LV_AND) {
 
