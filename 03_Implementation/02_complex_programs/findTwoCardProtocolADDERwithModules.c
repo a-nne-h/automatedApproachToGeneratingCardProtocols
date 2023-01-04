@@ -1267,238 +1267,6 @@ struct protocolStates copyResults(struct sequence seq, struct protocolStates res
 }
 
 
-
-struct protocolStates doFrXor(struct state s, unsigned int com1A, unsigned int com1B, unsigned int com2A, unsigned int com2B) {
-    struct protocolStates result;
-    // Initialise N empty states.
-    for (unsigned int i = 0; i < MAX_PROTOCOL_ENDSTATES; i++) {
-        result.states[i] = emptyState;
-        result.isUsed[i] = 0;
-    }
-    for (unsigned int j = 0; j < NUMBER_POSSIBLE_SEQUENCES; j++) {
-        struct sequence seq = s.seq[j];
-        //unsigned int endState = seq.val;
-        if (isStillPossible(seq.probs)) {
-            if ((isZero(seq.val[com1A], seq.val[com1B]) && isZero(seq.val[com2A], seq.val[com2B])) || ((isOne(seq.val[com1A], seq.val[com1B]) && isOne(seq.val[com2A], seq.val[com2B])))) { // 1212 & 2121
-                seq.val[com1A] = 1;
-                seq.val[com1B] = 2;
-                seq.val[com2A] = 1;
-                seq.val[com2B] = 2;
-            }
-            else { // 1221 & 2112
-                seq.val[com1A] = 2;
-                seq.val[com1B] = 1;
-                seq.val[com2A] = 1;
-                seq.val[com2B] = 2;
-
-            }
-            result = copyResults(seq, result, 0);
-            result.isUsed[0] = 1;
-        }
-    }
-    for (unsigned int k = 0; k < NUMBER_POSSIBLE_SEQUENCES; k++) {
-        struct sequence seq = s.seq[k];
-        //unsigned int endState = seq.val;
-        if (isStillPossible(seq.probs)) {
-            if ((isZero(seq.val[com1A], seq.val[com1B]) && isZero(seq.val[com2A], seq.val[com2B])) || ((isOne(seq.val[com1A], seq.val[com1B]) && isOne(seq.val[com2A], seq.val[com2B])))) { // 1212 & 2121
-                seq.val[com1A] = 2;
-                seq.val[com1B] = 1;
-                seq.val[com2A] = 2;
-                seq.val[com2B] = 1;
-            }
-            else { // 1221 & 2112
-                seq.val[com1A] = 1;
-                seq.val[com1B] = 2;
-                seq.val[com2A] = 2;
-                seq.val[com2B] = 1;
-
-            }
-            result = copyResults(seq, result, 1);
-            result.isUsed[1] = 1;
-        }
-    }
-    for (unsigned int l = 0; l < 2; l++) {
-        assume(isBottomFree(result.states[l]));
-    }
-    return result;
-}
-
-struct protocolStates applyFrXor(struct state s) {
-    // pick 4 cards that represent the two commitments
-    unsigned int com1A = nondet_uint();
-    unsigned int com1B = nondet_uint();
-    unsigned int com2A = nondet_uint();
-    unsigned int com2B = nondet_uint();
-    assume(com1A < N&& com1B < N&& com2A < N&& com2B < N);
-    assume(com1A != com1B && com1A != com2A && com1A != com2B);
-    assume(com1B != com2A && com1B != com2B);
-    assume(com2A != com2B);
-
-    for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
-        // if the probability/possibility of this state is not 0 
-        if (isStillPossible(s.seq[i].probs)) {
-
-            // check that throughout every possible sequence in the state we have chosen two different cards for our commitments
-            assume(s.seq[i].val[com1A] != s.seq[i].val[com1B]);
-            assume(s.seq[i].val[com2A] != s.seq[i].val[com2B]);
-        }
-    }
-
-    struct protocolStates result = doFrXor(s, com1A, com1B, com2A, com2B);
-
-    // check for security? s. apply Turn -> not really necessary because we assume that the protocol is secure
-    if (WEAK_SECURITY) { // Weaker security check: output-possibilistic or input-possibilistic.
-        for (unsigned int stateNumber = 0; stateNumber < MAX_PROTOCOL_ENDSTATES; stateNumber++) {
-            if (result.isUsed[stateNumber]) {
-                struct state resultState = result.states[stateNumber];
-                // Now nondeterministic. We only need to find one sequence for
-                // every possible in-/output. We assume nondeterministically
-                // that the state contains a sequence for every in-/output possibility.
-                for (unsigned int i = 0; i < NUMBER_PROBABILITIES; i++) {
-                    unsigned int seqIndex = nondet_uint();
-                    assume(seqIndex < NUMBER_POSSIBLE_SEQUENCES);
-                    assume(resultState.seq[seqIndex].probs.frac[i].num);
-                }
-            }
-        }
-    }
-    else { // Probabilistic security.
-        //struct fractions probs = computeTurnProbabilities(result);
-        //result = alignAndAssignFractions(result, probs);
-    }
-
-    return result;
-}
-
-/**
-* MODULES:
-*  perform the protocol->is there a smart way ? if not: hardcode the results
-*  check for the input by iterating through all sequences and checking ifStillPossible
-*  then check what kind of output they would make for each different possible output and sort them (the probability) in
-*/
-struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int com1B, unsigned int com2A, unsigned int com2B, unsigned int help1, unsigned int help2) {
-    struct protocolStates result;
-    // Initialise N empty states.
-    for (unsigned int i = 0; i < MAX_PROTOCOL_ENDSTATES; i++) {
-        result.states[i] = emptyState;
-        result.isUsed[i] = 0;
-    }
-
-    for (unsigned int j = 0; j < NUMBER_POSSIBLE_SEQUENCES; j++) {
-        struct sequence seq = s.seq[j];
-        //unsigned int endState = seq.val;
-        if (isStillPossible(seq.probs)) {
-            if (isZero(seq.val[com2A], seq.val[com2B])) { // 121212 & 211212
-                seq.val[com1A] = 1;
-                seq.val[com1B] = 2;
-                //endState[com2A] = 1;
-                //endState[com2B] = 2;
-                //endState[help1] = 1;
-                //endState[help2] = 2;
-            }
-            else {
-                if (isZero(seq.val[com1A], seq.val[com1B])) { // 122112
-                    //endState[com1A] = 1;
-                    //endState[com1B] = 2;
-                    //endState[com2A] = 2;
-                    //endState[com2B] = 1;
-                    //endState[help1] = 1;
-                    //endState[help2] = 2;
-
-                }
-                else { //212112
-                    seq.val[com1A] = 1;
-                    seq.val[com1B] = 2;
-                    seq.val[com2A] = 1;
-                    seq.val[com2B] = 2;
-                    seq.val[help1] = 2;
-                    seq.val[help2] = 1;
-                }
-            }
-            result = copyResults(seq, result, 0);
-            result.isUsed[0] = 1;
-        }
-    }
-
-    for (unsigned int k = 0; k < NUMBER_POSSIBLE_SEQUENCES; k++) {
-        struct sequence seq = s.seq[k];
-        //unsigned int endState = seq.val;
-        if (isStillPossible(seq.probs)) {
-            if (isZero(seq.val[com2A], seq.val[com2B])) { // 121212 & 211212
-                seq.val[com1A] = 2;
-                seq.val[com1B] = 1;
-                //endState[com2A] = 1;
-                //endState[com2B] = 2;
-                //endState[help1] = 1;
-                //endState[help2] = 2;
-            }
-            else {
-                if (isZero(seq.val[com1A], seq.val[com1B])) { // 122112
-                    seq.val[com1A] = 2;
-                    seq.val[com1B] = 1;
-                    seq.val[com2A] = 1;
-                    seq.val[com2B] = 2;
-                    seq.val[help1] = 2;
-                    seq.val[help2] = 1;
-
-                }
-                else { //212112
-                    //endState[com1A] = 2;
-                    //endState[com1B] = 1;
-                    //endState[com2A] = 2;
-                    //endState[com2B] = 1;
-                    //endState[help1] = 1;
-                    //endState[help2] = 2;
-                }
-            }
-            result = copyResults(seq, result, 1);
-            result.isUsed[1] = 1;
-        }
-    }
-    for (unsigned int l = 0; l < 2; l++) {
-        assume(isBottomFree(result.states[l]));
-    }
-    return result;
-}
-
-struct protocolStates applyFrAnd(struct state s) {
-    // ATTENTION: we need a new state that is similar but not the same to turnStates, 
-    // because the TurnStates have the size of POSSIBLE_OBSERVATION
-    // ATTENTION: do we differentiate for output possibilistic Security and the rest?
-
-    // pick 4 cards that represent the two commitments
-    unsigned int com1A = nondet_uint();
-    unsigned int com1B = nondet_uint();
-    unsigned int com2A = nondet_uint();
-    unsigned int com2B = nondet_uint();
-    assume(com1A < N&& com1B < N&& com2A < N&& com2B < N);
-    assume(com1A != com1B && com1A != com2A && com1A != com2B);
-    assume(com1B != com2A && com1B != com2B);
-    assume(com2A != com2B);
-
-    // pick 2 cards that represent the helper cards
-    unsigned int help1 = nondet_uint();
-    unsigned int help2 = nondet_uint();
-    assume(help1 < N&& help2 < N);
-    assume(help1 != com1A && help1 != com1B && help1 != com2A && help1 != com2B);
-    assume(help2 != com1A && help2 != com1B && help2 != com2A && help2 != com2B);
-    for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
-        // if the probability/possibility of this state is not 0 
-        if (isStillPossible(s.seq[i].probs)) {
-
-            // check that helper cards are the same all throughout every possible sequence in the state
-            assume(isZero((s.seq[i].val[help1]), s.seq[i].val[help2]));
-
-            // check that througout every possible sequence in the state we have chosen two different cards for our commitments
-            assume(s.seq[i].val[com1A] != s.seq[i].val[com1B]);
-            assume(s.seq[i].val[com2A] != s.seq[i].val[com2B]);
-        }
-    }
-    struct protocolStates result = doFrAnd(s, com1A, com1B, com2A, com2B, help1, help2);
-    // check for security? s. apply Turn -> not really necessary because we assume that the protocol is secure
-    return result;
-}
-
 struct protocolStates doProtocols(unsigned int protocolChosen,struct state s, unsigned int com1A, unsigned int com1B, unsigned int com2A, unsigned int com2B, unsigned int help1, unsigned int help2) {
     struct protocolStates result;
     // Initialise N empty states.
@@ -1532,51 +1300,26 @@ struct protocolStates doProtocols(unsigned int protocolChosen,struct state s, un
                 }
             }
 
-            seq.val[com1A] = 0;
-            seq.val[com1B] = 0;
-            seq.val[com2A] = 0;
-            seq.val[com2B] = 0;
-            seq.val[help1] = 0;
-            seq.val[help2] = 0;
-
-    }
-    for (unsigned int j = 0; j < NUMBER_POSSIBLE_SEQUENCES; j++) {
-        struct sequence seq = s.seq[j];
-        //unsigned int endState = seq.val;
-        if (isStillPossible(seq.probs)) {
-            if (isZero(seq.val[com2A], seq.val[com2B])) { // 121212 & 211212
-                seq.val[com1A] = 1;
-                seq.val[com1B] = 2;
-                //endState[com2A] = 1;
-                //endState[com2B] = 2;
-                //endState[help1] = 1;
-                //endState[help2] = 2;
-            }
-            else {
-                if (isZero(seq.val[com1A], seq.val[com1B])) { // 122112
-                    //endState[com1A] = 1;
-                    //endState[com1B] = 2;
-                    //endState[com2A] = 2;
-                    //endState[com2B] = 1;
-                    //endState[help1] = 1;
-                    //endState[help2] = 2;
-
-                }
-                else { //212112
-                    seq.val[com1A] = 1;
-                    seq.val[com1B] = 2;
-                    seq.val[com2A] = 1;
-                    seq.val[com2B] = 2;
-                    seq.val[help1] = 2;
-                    seq.val[help2] = 1;
+            seq.val[com1A] = PROTOCOL_TABLE[protocolChosen][i][0];
+            seq.val[com1B] = PROTOCOL_TABLE[protocolChosen][i][1];
+            seq.val[com2A] = PROTOCOL_TABLE[protocolChosen][i][2];
+            seq.val[com2B] = PROTOCOL_TABLE[protocolChosen][i][3];
+            // if we have one helper card
+            if (protocolChosen == FR_AND || protocolChosen == FR_COPY 
+                || protocolChosen == LV_AND || protocolChosen == LV_OR) {
+                seq.val[help1] = PROTOCOL_TABLE[protocolChosen][i][4];
+                // if we have two helper cards
+                if (protocolChosen == FR_AND || protocolChosen == FR_COPY) {
+                    seq.val[help2] = PROTOCOL_TABLE[protocolChosen][i][5];
                 }
             }
-            result = copyResults(seq, result, 0);
+            result = copyResults(seq, result, i);
             result.isUsed[0] = 1;
-        }
     }
-
-
+    for (unsigned int l = 0; l < MAX_PROTOCOL_ENDSTATES; l++) {
+        assume(isBottomFree(result.states[l]));
+     }
+    return result;
 }
 
 struct protocolStates applyProtocols(state s) {
