@@ -122,6 +122,7 @@ void __CPROVER_assert(int x, char y[]);
 /**
 * whether the protcol
 * AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
+* (https://doi.org/10.1007/978-3-642-02270-8_36)
 * is used (0: not used, 1: used)
 */
 #ifndef USE_FR_AND
@@ -130,6 +131,7 @@ void __CPROVER_assert(int x, char y[]);
 
 /**
 * AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
+* (https://doi.org/10.1007/978-3-642-02270-8_36)
 */
 #ifndef FR_AND
 #define FR_AND 0
@@ -138,7 +140,8 @@ void __CPROVER_assert(int x, char y[]);
 
  /**
  * whether the protcol
- * XOR by Takaaki Mizukiand Hideaki Sone(2009) -> Finite Runtime, 4 cards, 2 steps
+ * XOR by Takaaki Mizuki and Hideaki Sone(2009) -> Finite Runtime, 4 cards, 2 steps
+ * (https://doi.org/10.1007/978-3-642-02270-8_36)
  * is used (0: not used, 1: used)
  */
 #ifndef USE_FR_XOR
@@ -146,7 +149,8 @@ void __CPROVER_assert(int x, char y[]);
 #endif 
 
  /**
- * XOR by Takaaki Mizukiand Hideaki Sone(2009) -> Finite Runtime, 4 cards, 2 steps
+ * XOR by Takaaki Mizuki and Hideaki Sone(2009) -> Finite Runtime, 4 cards, 2 steps
+ * (https://doi.org/10.1007/978-3-642-02270-8_36)
  */
 #ifndef FR_XOR
 #define FR_XOR 1
@@ -154,7 +158,8 @@ void __CPROVER_assert(int x, char y[]);
 
  /**
  * whether the protcol
- * AND by Koch et al (2021) -> Las Vegas, 5 cards, 5 steps
+ * AND by Alexander Koch, Michael Schrempp and Michael Kirsten (2021) -> Las Vegas, 5 cards, 5 steps
+ * (https://doi.org/10.1007/s00354-020-00120-0)
  * is used (0: not used, 1: used)
  */
 #ifndef USE_LV_AND
@@ -162,7 +167,8 @@ void __CPROVER_assert(int x, char y[]);
 #endif 
 
  /**
- * AND by Koch et al (2021) -> Las Vegas, 5 cards, 5 steps
+ * AND by Alexander Koch, Michael Schrempp and Michael Kirsten (2021) -> Las Vegas, 5 cards, 5 steps
+ * (https://doi.org/10.1007/s00354-020-00120-0)
  */
 #ifndef LV_AND
 #define LV_AND 2
@@ -171,7 +177,8 @@ void __CPROVER_assert(int x, char y[]);
 
 /**
 * whether the protcol
-* OR by myself -> Las Vegas, 4 cards, 6 steps
+* OR by Anne Hoff -> Las Vegas, 4 cards, 6 steps
+* (https://github.com/a-nne-h/automatedApproachToGeneratingCardProtocols)
 * is used (0: not used, 1: used)
 */
 #ifndef USE_LV_OR
@@ -179,10 +186,29 @@ void __CPROVER_assert(int x, char y[]);
 #endif 
 
 /**
-* OR by myself -> Las Vegas, 4 cards, 6 steps
+* OR by Anne Hoff -> Las Vegas, 4 cards, 6 steps
+* (https://github.com/a-nne-h/automatedApproachToGeneratingCardProtocols)
 */
 #ifndef LV_OR
 #define LV_OR 3
+#endif 
+
+/**
+* whether the protcol
+* COPY by Takaaki Mizuki and Hideaki Sone (2009) with fixed amount of copies = 1 -> Finite Runtime, 6 cards, 2 steps
+* (https://doi.org/10.1007/978-3-642-02270-8_36)
+* is used(0: not used, 1 : used)
+*/
+#ifndef USE_FR_COPY
+#define USE_FR_COPY 0
+#endif 
+
+/**
+* COPY by Takaaki Mizuki and Hideaki Sone (2009) with fixed amount of copies = 1 -> Finite Runtime, 6 cards, 2 steps
+* (https://doi.org/10.1007/978-3-642-02270-8_36)
+*/
+#ifndef LV_COPY
+#define LV_COPY 3
 #endif 
 
 /**
