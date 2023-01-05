@@ -211,6 +211,13 @@ void __CPROVER_assert(int x, char y[]);
 #define FR_COPY 4
 #endif 
 
+
+
+/**
+* TODO: we need all possible endstates here, not just one
+* therefore the struct PROTOCOL_TABLE should have PROTOCOL_TABLE[5][MAX_PROTOCOL_ENDSTATES][4][6]
+* and the FR_AND_TABLE & co schould be FR_AND_TABLE[MAX_PROTOCOL_ENDSTATES][4]
+*/
 const unsigned int VAL_111222 = { 1,1,1,2,2,2 };
 const unsigned int VAL_112122 = { 1,1,2,1,2,2 };
 const unsigned int VAL_112212 = { 1,1,2,2,1,2 };
@@ -232,13 +239,25 @@ const unsigned int VAL_221121 = { 2,2,1,1,2,1 };
 const unsigned int VAL_221211 = { 2,2,1,2,1,1 };
 const unsigned int VAL_222111 = { 2,2,2,1,1,1 };
 
+const unsigned int VAL_12122 = { 1,2,1,2,2,0 };
+const unsigned int VAL_12212 = { 1,2,2,1,2,0 };
+const unsigned int VAL_21212 = { 2,1,2,1,2,0 };
+const unsigned int VAL_21122 = { 2,1,1,2,2,0 };
 
-const unsigned int FR_AND_TABLE[4][6] = {};
-const unsigned int FR_XOR_TABLE[4][6] = {};
-const unsigned int LV_AND_TABLE[4][6] = {};
-const unsigned int LV_OR_TABLE[4][6] = {};
-const unsigned int FR_COPY_TABLE[4][6] = {};
-const unsigned int PROTOCOL_TABLE[5][4][6] = { FR_AND_TABLE, FR_XOR_TABLE, LV_AND_TABLE, LV_OR_TABLE, FR_COPY_TABLE };
+const unsigned int VAL_1212 = { 1,2,1,2,0,0 };
+const unsigned int VAL_2112 = { 2,1,1,2,0,0 };
+const unsigned int VAL_2121 = { 2,1,2,1,0,0 };
+const unsigned int VAL_1221 = { 1,2,2,1,0,0 };
+const unsigned int VAL_2211 = { 2,2,1,1,0,0 };
+
+const unsigned int VAL_PLACEHOLDER = { 0,0,0,0,0,0 };
+
+const unsigned int FR_AND_TABLE[2][4][6] = { { VAL_121212, VAL_122112,VAL_121212, VAL_121221 }, {VAL_211212,VAL_211221, VAL_211212, VAL_212112}};
+const unsigned int FR_XOR_TABLE[2][4][6] = { { VAL_1212, VAL_2112, VAL_2112, VAL_1212 }, {VAL_2121, VAL_1221, VAL_1221, VAL_2121} };
+const unsigned int LV_AND_TABLE[2][4][6] = { { VAL_12212, VAL_12212, VAL_12212, VAL_12122 }, {VAL_21122, VAL_21122, VAL_21122, VAL_21212}};
+const unsigned int LV_OR_TABLE[2][4][6] = { { VAL_2211 VAL_1212, VAL_1212, VAL_1212 }, {VAL_2121, VAL_2112, VAL_2112, VAL_2112 }};
+const unsigned int FR_COPY_TABLE[2][4][6] = { { VAL_121212, VAL_PLACEHOLDER, VAL_122121, VAL_PLACEHOLDER }, {VAL_212121, VAL_PLACEHOLDER, VAL_211212, VAL_PLACEHOLDER}};
+const unsigned int PROTOCOL_TABLE[5][2][4][6] = { FR_AND_TABLE, FR_XOR_TABLE, LV_AND_TABLE, LV_OR_TABLE, FR_COPY_TABLE };
 
        /**
        * NOT does not have to be a protocol, becaue it is nothing else than a perm operation which is already included
@@ -1300,17 +1319,17 @@ struct protocolStates doProtocols(unsigned int protocolChosen,struct state s, un
                 }
             }
 
-            seq.val[com1A] = PROTOCOL_TABLE[protocolChosen][i][0];
-            seq.val[com1B] = PROTOCOL_TABLE[protocolChosen][i][1];
-            seq.val[com2A] = PROTOCOL_TABLE[protocolChosen][i][2];
-            seq.val[com2B] = PROTOCOL_TABLE[protocolChosen][i][3];
-            // if we have one helper card
+            seq.val[com1A] = PROTOCOL_TABLE[protocolChosen][i][idx][0];
+            seq.val[com1B] = PROTOCOL_TABLE[protocolChosen][i][idx][1];
+            seq.val[com2A] = PROTOCOL_TABLE[protocolChosen][i][idx][2];
+            seq.val[com2B] = PROTOCOL_TABLE[protocolChosen][i][idx][3];
+            // if we have one (or more) helper card
             if (protocolChosen == FR_AND || protocolChosen == FR_COPY 
                 || protocolChosen == LV_AND || protocolChosen == LV_OR) {
-                seq.val[help1] = PROTOCOL_TABLE[protocolChosen][i][4];
+                seq.val[help1] = PROTOCOL_TABLE[protocolChosen][i][idx][4];
                 // if we have two helper cards
                 if (protocolChosen == FR_AND || protocolChosen == FR_COPY) {
-                    seq.val[help2] = PROTOCOL_TABLE[protocolChosen][i][5];
+                    seq.val[help2] = PROTOCOL_TABLE[protocolChosen][i][idx][5];
                 }
             }
             result = copyResults(seq, result, i);
