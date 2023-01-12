@@ -567,15 +567,20 @@ int main() {
         arrSeqIdx[i] = getSequenceIndexFromArray(start[i], startState);
     }
 
-    for (unsigned int i = 0; i < (NUMBER_START_SEQS - 1); i++) {
-        startState.seq[arrSeqIdx[i]].probs.frac[0].num = 1;
+    if (WEAK_SECURITY == 2) {
+        for (unsigned int i = 0; i < (NUMBER_START_SEQS - 1); i++) {
+            startState.seq[arrSeqIdx[i]].probs.frac[0].num = 1;
+        }
+        unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
+        unsigned int arrIdx = arrSeqIdx[lastStartSeq];
+        unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
+        startState.seq[arrIdx].probs.frac[lastProbIdx].num = isOneOne(start[lastStartSeq]);
     }
-
-    unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
-    unsigned int arrIdx = arrSeqIdx[lastStartSeq];
-    unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
-    startState.seq[arrIdx].probs.frac[lastProbIdx].num = isOneOne(start[lastStartSeq]);
-
+    else {
+        for (unsigned int i = 0; i < (NUMBER_START_SEQS); i++) {
+            startState.seq[arrSeqIdx[i]].probs.frac[i].num = 1;
+        }
+    }
 
 
     stateWithAllPermutations = getStateWithAllPermutations();
