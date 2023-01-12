@@ -391,6 +391,10 @@ struct state applyShuffle(struct state s) {
     return res;
 }
 
+
+/**
+* This function performs a shuffle and afterwards checks for a specific property of the probabilities
+*/
 struct state tryPermutation(struct state s) {
     struct state res = applyShuffle(s);
    
