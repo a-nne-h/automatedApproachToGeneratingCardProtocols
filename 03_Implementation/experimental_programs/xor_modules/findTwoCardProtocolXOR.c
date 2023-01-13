@@ -31,223 +31,289 @@ void __CPROVER_assert(int x, char y[]);
 #define N 4
 #endif
 
-/**
- * Amount of distinguishable card symbols.
- */
+ /**
+  * Amount of distinguishable card symbols.
+  */
 #ifndef NUM_SYM
 #define NUM_SYM 2
 #endif
 
 
-/**
- * Number of all cards used for commitments
- */
+  /**
+   * Number of all cards used for commitments
+   */
 #ifndef COMMIT
 #define COMMIT 4
 #endif
 
-/**
- * Protocol length.
- */
+   /**
+    * Protocol length.
+    */
 #ifndef L
 #define L 5
 #endif
 
- /**
-  * 1 is finite runtime, 0 is restart-free Las-Vegas.
-  * NOTE: this feature is not implemented yet
-  */
-  /**
-  * MODULES:
-  * MAYBE use this, to decide which protocols are used.
-  */
-#ifndef FINITE_RUNTIME
-#define FINITE_RUNTIME 0
-#endif
 
-  /**
-  * MODULES:
-  * More than one operation
-  */
-  /**
-  * determines whether the Modules are used or not
-  * 0: no modules only turns and shuffles
-  * 1: modules are used
-  */
+    /**
+    * MODULES:
+    * More than one operation
+    */
+    /**
+    * determines whether the Modules are used or not
+    * 0: no modules only turns and shuffles
+    * 1: modules are used
+    */
 #ifndef MODULES
 #define MODULES 1
 #endif
-
-  /**
-  * Amount of different action types allowed in protocol, excluding result action.
-  */
+    /**
+    * Amount of different action types allowed in protocol, excluding result action.
+    */
 #if MODULES == 0
 #define A 2
 #else
 #define A 3
 #endif
-
-
-/**
- * Number assigned to turn action.
- */
+    /**
+     * Number assigned to turn action.
+     */
 #ifndef TURN
 #define TURN 0
 #endif
-
-/**
- * Number assigned to shuffle action.
- */
+     /**
+      * Number assigned to shuffle action.
+      */
 #ifndef SHUFFLE
 #define SHUFFLE 1
 #endif
-
- /**
- * Number assigned to protocol
- */
+      /**
+      * Number assigned to protocol execution action.
+      */
 #ifndef PROTOCOL
 #define PROTOCOL 2
 #endif
- /**
- * whether the protcol
- * AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
- * is used (0: not used, 1: used)
- */
+      /**
+      * whether the protcol
+      * AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
+      * (https://doi.org/10.1007/978-3-642-02270-8_36)
+      * is used (0: not used, 1: used)
+      */
 #ifndef USE_FR_AND
-#define USE_FR_AND 0
+#define USE_FR_AND 1
 #endif 
-
- /**
- * AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
- */
+      /**
+      * AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
+      * (https://doi.org/10.1007/978-3-642-02270-8_36)
+      */
 #ifndef FR_AND
 #define FR_AND 0
 #endif 
- /**
- * whether the protcol
- * XOR by Takaaki Mizukiand Hideaki Sone(2009) -> Finite Runtime, 4 cards, 2 steps
- * is used (0: not used, 1: used)
- */
+      /**
+      * whether the protcol
+      * XOR by Takaaki Mizuki and Hideaki Sone(2009) -> Finite Runtime, 4 cards, 2 steps
+      * (https://doi.org/10.1007/978-3-642-02270-8_36)
+      * is used (0: not used, 1: used)
+      */
 #ifndef USE_FR_XOR
 #define USE_FR_XOR 1
 #endif 
- /**
- * XOR by Takaaki Mizukiand Hideaki Sone(2009) -> Finite Runtime, 4 cards, 2 steps
- */
+      /**
+      * XOR by Takaaki Mizuki and Hideaki Sone(2009) -> Finite Runtime, 4 cards, 2 steps
+      * (https://doi.org/10.1007/978-3-642-02270-8_36)
+      */
 #ifndef FR_XOR
 #define FR_XOR 1
 #endif 
-
- /**
- * whether the protcol
- * AND by Koch et al (2021) -> Las Vegas, 5 cards, 5 steps
- * is used (0: not used, 1: used)
- */
+      /**
+      * whether the protcol
+      * AND by Alexander Koch, Michael Schrempp and Michael Kirsten (2021) -> Las Vegas, 5 cards, 5 steps
+      * (https://doi.org/10.1007/s00354-020-00120-0)
+      * is used (0: not used, 1: used)
+      */
 #ifndef USE_LV_AND
-#define USE_LV_AND 0
+#define USE_LV_AND 1
 #endif 
-
- /**
- * AND by Koch et al (2021) -> Las Vegas, 5 cards, 5 steps
- */
+      /**
+      * AND by Alexander Koch, Michael Schrempp and Michael Kirsten (2021) -> Las Vegas, 5 cards, 5 steps
+      * (https://doi.org/10.1007/s00354-020-00120-0)
+      */
 #ifndef LV_AND
 #define LV_AND 2
 #endif 
-
- /**
- * whether the protcol
- * OR by myself -> Las Vegas, 4 cards, 6 steps
- * is used (0: not used, 1: used)
- */
+      /**
+      * whether the protcol
+      * OR by Anne Hoff -> Las Vegas, 4 cards, 6 steps
+      * (https://github.com/a-nne-h/automatedApproachToGeneratingCardProtocols)
+      * is used (0: not used, 1: used)
+      */
 #ifndef USE_LV_OR
 #define USE_LV_OR 0
 #endif 
-
- /**
- * OR by myself -> Las Vegas, 4 cards, 6 steps
- */
+      /**
+      * OR by Anne Hoff -> Las Vegas, 4 cards, 6 steps
+      * (https://github.com/a-nne-h/automatedApproachToGeneratingCardProtocols)
+      */
 #ifndef LV_OR
 #define LV_OR 3
-#endif
+#endif 
+      /**
+      * whether the protcol
+      * COPY by Takaaki Mizuki and Hideaki Sone (2009) with fixed amount of copies = 1 -> Finite Runtime, 6 cards, 2 steps
+      * (https://doi.org/10.1007/978-3-642-02270-8_36)
+      * is used(0: not used, 1 : used)
+      */
+#ifndef USE_FR_COPY
+#define USE_FR_COPY 0
+#endif 
+      /**
+      * COPY by Takaaki Mizuki and Hideaki Sone (2009) with fixed amount of copies = 1 -> Finite Runtime, 6 cards, 2 steps
+      * (https://doi.org/10.1007/978-3-642-02270-8_36)
+      */
+#ifndef FR_COPY
+#define FR_COPY 4
+#endif 
 
- /**
- * NOT does not have to be a protocol, becaue it is nothing else than a perm operation which is already included
- * Whether NOT is used -> Finite Runtime, 2 cards, 1 steps
- */
+      /**
+      * TODO: we need all possible endstates here, not just one
+      * therefore the struct PROTOCOL_TABLE should have PROTOCOL_TABLE[5][MAX_PROTOCOL_ENDSTATES][4][6]
+      * and the FR_AND_TABLE & co schould be FR_AND_TABLE[MAX_PROTOCOL_ENDSTATES][4]
+      */
+unsigned int VAL_111222[6] = { 1,1,1,2,2,2 };
+unsigned int VAL_112122[6] = { 1,1,2,1,2,2 };
+unsigned int VAL_112212[6] = { 1,1,2,2,1,2 };
+unsigned int VAL_112221[6] = { 1,1,2,2,2,1 };
+unsigned int VAL_121122[6] = { 1,2,1,1,2,2 };
+unsigned int VAL_121212[6] = { 1,2,1,2,1,2 };
+unsigned int VAL_121221[6] = { 1,2,1,2,2,1 };
+unsigned int VAL_122112[6] = { 1,2,2,1,1,2 };
+unsigned int VAL_122121[6] = { 1,2,2,1,2,1 };
+unsigned int VAL_122211[6] = { 1,2,2,2,1,1 };
+unsigned int VAL_211122[6] = { 2,1,1,1,2,2 };
+unsigned int VAL_211212[6] = { 2,1,1,2,1,2 };
+unsigned int VAL_211221[6] = { 2,1,1,2,2,1 };
+unsigned int VAL_212112[6] = { 2,1,2,1,1,2 };
+unsigned int VAL_212121[6] = { 2,1,2,1,2,1 };
+unsigned int VAL_212211[6] = { 2,1,2,2,1,1 };
+unsigned int VAL_221112[6] = { 2,2,1,1,1,2 };
+unsigned int VAL_221121[6] = { 2,2,1,1,2,1 };
+unsigned int VAL_221211[6] = { 2,2,1,2,1,1 };
+unsigned int VAL_222111[6] = { 2,2,2,1,1,1 };
+unsigned int VAL_12122[6] = { 1,2,1,2,2,0 };
+unsigned int VAL_12212[6] = { 1,2,2,1,2,0 };
+unsigned int VAL_21212[6] = { 2,1,2,1,2,0 };
+unsigned int VAL_21122[6] = { 2,1,1,2,2,0 };
+unsigned int VAL_1212[6] = { 1,2,1,2,0,0 };
+unsigned int VAL_2112[6] = { 2,1,1,2,0,0 };
+unsigned int VAL_2121[6] = { 2,1,2,1,0,0 };
+unsigned int VAL_1221[6] = { 1,2,2,1,0,0 };
+unsigned int VAL_2211[6] = { 2,2,1,1,0,0 };
+
+unsigned int VAL_PLACEHOLDER[6] = { 0,0,0,0,0,0 };
+
+//unsigned int FR_AND_TABLE[2][4][6] = { { { 1,2,1,2,1,2 }, { 1,2,2,1,1,2 },{ 1,2,1,2,1,2 }, { 1,2,1,2,2,1 } }, { { 2,1,1,2,1,2 },{ 2,1,1,2,2,1 }, { 2,1,1,2,1,2 },  { 2,1,2,1,1,2 } } };
+//unsigned int FR_XOR_TABLE[2][4][6] = { { { 1,2,1,2,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }, { 1,2,1,2,0,0 } }, {{ 2,1,2,1,0,0 }, { 1,2,2,1,0,0 }, { 1,2,2,1,0,0 }, { 2,1,2,1,0,0 }} };
+//unsigned int LV_AND_TABLE[2][4][6] = { { { 1,2,2,1,2,0 }, { 1,2,2,1,2,0 }, { 1,2,2,1,2,0 },  { 1,2,1,2,2,0 } }, { { 2,1,1,2,2,0 },  { 2,1,1,2,2,0 },  { 2,1,1,2,2,0 }, { 2,1,2,1,2,0 }} };
+//unsigned int LV_OR_TABLE[2][4][6] = { { { 2,2,1,1,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 } }, {{ 2,1,2,1,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 } } };
+//unsigned int FR_COPY_TABLE[2][4][6] = { { { 1,2,1,2,1,2 }, { 0,0,0,0,0,0 }, { 1,2,2,1,2,1 }, { 0,0,0,0,0,0 } }, { { 2,1,2,1,2,1 }, { 0,0,0,0,0,0 }, { 2,1,1,2,1,2 }, { 0,0,0,0,0,0 }} };
+//unsigned int protocolTable[5][2][4][6] = { FR_AND_TABLE, FR_XOR_TABLE, LV_AND_TABLE, LV_OR_TABLE, FR_COPY_TABLE };
+unsigned int protocolTable[5][2][4][6] = { { { { 1,2,1,2,1,2 }, { 1,2,2,1,1,2 },{ 1,2,1,2,1,2 }, { 1,2,1,2,2,1 } }, { { 2,1,1,2,1,2 },{ 2,1,1,2,2,1 }, { 2,1,1,2,1,2 },  { 2,1,2,1,1,2 } } },
+{ { { 1,2,1,2,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }, { 1,2,1,2,0,0 } }, {{ 2,1,2,1,0,0 }, { 1,2,2,1,0,0 }, { 1,2,2,1,0,0 }, { 2,1,2,1,0,0 }} },
+{ { { 1,2,2,1,2,0 }, { 1,2,2,1,2,0 }, { 1,2,2,1,2,0 },  { 1,2,1,2,2,0 } }, { { 2,1,1,2,2,0 },  { 2,1,1,2,2,0 },  { 2,1,1,2,2,0 }, { 2,1,2,1,2,0 }} },
+{ { { 2,2,1,1,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 } }, {{ 2,1,2,1,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 } } },
+{ { { 1,2,1,2,1,2 }, { 0,0,0,0,0,0 }, { 1,2,2,1,2,1 }, { 0,0,0,0,0,0 } }, { { 2,1,2,1,2,1 }, { 0,0,0,0,0,0 }, { 2,1,1,2,1,2 }, { 0,0,0,0,0,0 }} } };
+
 
 /**
- * Regarding possibilities for a sequence, we (only) consider
- * - 0: probabilistic security
- *      (exact possibilities for a sequence)
- * - 1: input possibilistic security (yes or no)
- *      (whether the sequence can belong to the specific input)
- * - 2: output possibilistic security (yes or no)
- *      (to which output the sequence can belong)
- */
+* MODULES:
+* The maximum number of possible result states a protocol can have.
+* This is defined for all possibly used protocols because protocolStates needs to have a fixed size
+* it is currently defined as 2, because the protocol with the most endstates has 2 endstates
+*/
+#ifndef MAX_PROTOCOL_ENDSTATES
+#define MAX_PROTOCOL_ENDSTATES 2
+#endif
+
+
+       /**
+        * Regarding possibilities for a sequence, we (only) consider
+        * - 0: probabilistic security
+        *      (exact possibilities for a sequence)
+        * - 1: input possibilistic security (yes or no)
+        *      (whether the sequence can belong to the specific input)
+        * - 2: output possibilistic security (yes or no)
+        *      (to which output the sequence can belong)
+        */
 #ifndef WEAK_SECURITY
 #define WEAK_SECURITY 2
 #endif
 
-/**
- * We always had four input possibilities,
- * this is changed if we only consider output possibilistic security.
- * This variable is used for over-approximating loops such that
- * their unrolling bound can be statically determined.
- */
+        /**
+         * We always had four input possibilities,
+         * this is changed if we only consider output possibilistic security.
+         * This variable is used for over-approximating loops such that
+         * their unrolling bound can be statically determined.
+         */
 #if WEAK_SECURITY == 2
-    #define NUMBER_PROBABILITIES 2
+#define NUMBER_PROBABILITIES 2
 #else
-    #define NUMBER_PROBABILITIES 4
+#define NUMBER_PROBABILITIES 4
 #endif
 
-/**
- * For two players inserting yes or no to a protocol,
- * there are four different possibilities how the protocol could start.
- * For more players or other scenarios this value has to be adapted.
- */
+         /**
+          * For two players inserting yes or no to a protocol,
+          * there are four different possibilities how the protocol could start.
+          * For more players or other scenarios this value has to be adapted.
+          */
 #ifndef NUMBER_START_SEQS
 #define NUMBER_START_SEQS 4
 #endif
 
-
-/**
- * If set to 1, only closed protocols with closed shuffles will be searched.
- */
-#ifndef CLOSED_PROTOCOL
-#define CLOSED_PROTOCOL 1
+          /**
+           * 1 is finite runtime, 0 is restart-free Las-Vegas.
+           * NOTE: this feature is not implemented yet
+           */
+#ifndef FINITE_RUNTIME
+#define FINITE_RUNTIME 0
 #endif
 
-/**
- * If set to 1, only protocols with random cuts will be searched.
- */
+           /**
+            * If set to 1, only closed protocols with closed shuffles will be searched.
+            */
+#ifndef CLOSED_PROTOCOL
+#define CLOSED_PROTOCOL 0
+#endif
+
+            /**
+             * If set to 1, only protocols with random cuts will be searched.
+             */
 #ifndef FORCE_RANDOM_CUTS
 #define FORCE_RANDOM_CUTS 0
 #endif
 
-/**
- * Maximum number of sequences (usually N!).
- * This value can be lowered if there are multiple indistinguishable symbols in the deck.
- * This variable is used for over-approximating loops such that
- * their unrolling bound can be statically determined.
- */
+             /**
+              * Maximum number of sequences (usually N!).
+              * This value can be lowered if there are multiple indistinguishable symbols in the deck.
+              * This variable is used for over-approximating loops such that
+              * their unrolling bound can be statically determined.
+              */
 #ifndef NUMBER_POSSIBLE_SEQUENCES
 #define NUMBER_POSSIBLE_SEQUENCES 24
 #endif
 
-/**
- * Maximum number of permutations fpr the given number of cards (N!).
- * This value has to be computed by our script, or adjusted manually.
- */
+              /**
+               * Maximum number of permutations fpr the given number of cards (N!).
+               * This value has to be computed by our script, or adjusted manually.
+               */
 #ifndef NUMBER_POSSIBLE_PERMUTATIONS
 #define NUMBER_POSSIBLE_PERMUTATIONS 24
 #endif
 
-/**
- * This variable is used to limit the permutation set in any shuffle.
- * This can reduce the running time of this program.
- * When reducing this Variable, keep in mind that it could exclude some valid protocols,
- * as some valid permutation sets are not longer considered.
- */
+               /**
+                * This variable is used to limit the permutation set in any shuffle.
+                * This can reduce the running time of this program.
+                * When reducing this Variable, keep in mind that it could exclude some valid protocols,
+                * as some valid permutation sets are not longer considered.
+                */
 #ifndef MAX_PERM_SET_SIZE
 #define MAX_PERM_SET_SIZE NUMBER_POSSIBLE_PERMUTATIONS
 #endif
@@ -309,9 +375,9 @@ void __CPROVER_assert(int x, char y[]);
 #endif
 
 const unsigned int subgroupSizes[13] =
-    { SUBGROUP_SIZE_1, SUBGROUP_SIZE_2, SUBGROUP_SIZE_3, SUBGROUP_SIZE_4, SUBGROUP_SIZE_5,
-      SUBGROUP_SIZE_6, SUBGROUP_SIZE_7, SUBGROUP_SIZE_8, SUBGROUP_SIZE_9, SUBGROUP_SIZE_10,
-      SUBGROUP_SIZE_11, SUBGROUP_SIZE_12, SUBGROUP_SIZE_13 };
+{ SUBGROUP_SIZE_1, SUBGROUP_SIZE_2, SUBGROUP_SIZE_3, SUBGROUP_SIZE_4, SUBGROUP_SIZE_5,
+  SUBGROUP_SIZE_6, SUBGROUP_SIZE_7, SUBGROUP_SIZE_8, SUBGROUP_SIZE_9, SUBGROUP_SIZE_10,
+  SUBGROUP_SIZE_11, SUBGROUP_SIZE_12, SUBGROUP_SIZE_13 };
 
 /**
  * After a turn, the protocol tree splits up in one subtree for each possible observation.
@@ -324,26 +390,16 @@ const unsigned int subgroupSizes[13] =
 #define MIN_TURN_OBSERVATIONS 2
 #endif
 
-/**
- * See description of MIN_TURN_OBSERVATIONS above.
- */
+ /**
+  * See description of MIN_TURN_OBSERVATIONS above.
+  */
 #ifndef MAX_TURN_OBSERVATIONS
 #define MAX_TURN_OBSERVATIONS NUM_SYM
 #endif
 
- /**
- * MODULES:
- * The maximum number of possible result states a protocol can have.
- * This is defined for all possibly used protocols because protocolStates needs to have a fixed size
- * it is currently defined as 2, because the protocol with the most endstates has 2 endstates
- */
-#ifndef MAX_PROTOCOL_ENDSTATES
-#define MAX_PROTOCOL_ENDSTATES 2
-#endif
-
-/**
- * The number of states stored in the protocol run (Start state + all L derived states).
- */
+  /**
+   * The number of states stored in the protocol run (Start state + all L derived states).
+   */
 #ifndef MAX_REACHABLE_STATES
 #define MAX_REACHABLE_STATES L+1
 #endif
@@ -435,6 +491,7 @@ struct protocolStates {
     unsigned int isUsed[MAX_PROTOCOL_ENDSTATES];
 };
 
+
 /**
  * An integer array with length N.
  */
@@ -486,15 +543,16 @@ struct state getEmptyState() {
         for (unsigned int j = 0; j < N; j++) {
             s.seq[i].val[j] = nondet_uint();
             unsigned int val = s.seq[i].val[j];
-            assume (0 < val  && val <= NUM_SYM);
+            assume(0 < val && val <= NUM_SYM);
             unsigned int idx = val - 1;
             taken.arr[idx]++;
-            assume (taken.arr[idx] <= N-2); // At least two symbols have to be different. Players cannot commit otherwise.
+            assume(taken.arr[idx] <= N - 2); // At least two symbols have to be different. Players cannot commit otherwise.
         }
-        for (unsigned int  j = 0; j < NUM_SYM; j++) {
-            if(i == 0) {
+        for (unsigned int j = 0; j < NUM_SYM; j++) {
+            if (i == 0) {
                 symbolCount.arr[j] = taken.arr[j];
-            } else { // We ensure that every sequence consists of the same symbols
+            }
+            else { // We ensure that every sequence consists of the same symbols
                 assume(taken.arr[j] == symbolCount.arr[j]);
             }
         }
@@ -514,9 +572,9 @@ struct state getEmptyState() {
             unsigned int a = s.seq[last].val[j];
             unsigned int f = s.seq[i].val[j];
             checked |= (a < f);
-            assume (checked || a == f);
+            assume(checked || a == f);
         }
-        assume (checked);
+        assume(checked);
     }
     return s;
 }
@@ -537,7 +595,7 @@ struct permutationState stateWithAllPermutations;
  * the cards "1" and "2", and Bob uses the cards "3" and "4".
  */
 struct narray getStartSequence() {
-    assume (N >= COMMIT); // We assume at least as many cards as needed for the commitments.
+    assume(N >= COMMIT); // We assume at least as many cards as needed for the commitments.
     struct numsymarray taken;
     for (unsigned int i = 0; i < NUM_SYM; i++) {
         taken.arr[i] = 0;
@@ -546,18 +604,18 @@ struct narray getStartSequence() {
     for (unsigned int i = 0; i < COMMIT; i++) {
         res.arr[i] = nondet_uint();
         unsigned int val = res.arr[i];
-        assume (0 < val && val <= COMMIT && val <= NUM_SYM);
+        assume(0 < val && val <= COMMIT && val <= NUM_SYM);
         unsigned int idx = val - 1;
-        assume (taken.arr[idx] < COMMIT / NUM_SYM);
+        assume(taken.arr[idx] < COMMIT / NUM_SYM);
         taken.arr[idx]++;
     }
     // Here we assume that each player only uses fully distinguishable cards
-    assume (res.arr[1] != res.arr[0]);
-    assume (res.arr[3] != res.arr[2]);
+    assume(res.arr[1] != res.arr[0]);
+    assume(res.arr[3] != res.arr[2]);
     for (unsigned int i = COMMIT; i < N; i++) {
         res.arr[i] = nondet_uint();
-        assume (0 < res.arr[i]);
-        assume (res.arr[i] <= NUM_SYM);
+        assume(0 < res.arr[i]);
+        assume(res.arr[i] <= NUM_SYM);
     }
     return res;
 }
@@ -580,17 +638,17 @@ unsigned int isStillPossible(struct fractions probs) {
  */
 unsigned int getSequenceIndexFromArray(struct narray compare, struct state compareState) {
     unsigned int seqIdx = nondet_uint();
-    assume (seqIdx < NUMBER_POSSIBLE_SEQUENCES);
+    assume(seqIdx < NUMBER_POSSIBLE_SEQUENCES);
     struct sequence seq = compareState.seq[seqIdx];
 
     for (unsigned int i = 0; i < N; i++) {
-        assume (compare.arr[i] == seq.val[i]);
+        assume(compare.arr[i] == seq.val[i]);
     }
     return seqIdx;
 }
 
 struct permutationState getStateWithAllPermutations() {
- struct permutationState s;
+    struct permutationState s;
     for (unsigned int i = 0; i < NUMBER_POSSIBLE_PERMUTATIONS; i++) {
         struct narray taken;
         for (unsigned int j = 0; j < N; j++) {
@@ -599,9 +657,9 @@ struct permutationState getStateWithAllPermutations() {
         for (unsigned int j = 0; j < N; j++) {
             s.seq[i].val[j] = nondet_uint();
             unsigned int val = s.seq[i].val[j];
-            assume (0 < val && val <= N);
+            assume(0 < val && val <= N);
             unsigned int idx = val - 1;
-            assume (!taken.arr[idx]);
+            assume(!taken.arr[idx]);
             taken.arr[idx]++;
         }
     }
@@ -622,24 +680,24 @@ struct permutationState getStateWithAllPermutations() {
             unsigned int a = s.seq[last].val[j];
             unsigned int f = s.seq[i].val[j];
             checked |= (a < f);
-            assume (checked || a == f);
+            assume(checked || a == f);
         }
-        assume (checked);
+        assume(checked);
     }
     return s;
 }
 
 /**
  * Calculates the resulting permutation when we first apply firstPermutation to a sequence, and
- * subsequently we apply secondPermutation (secondPermutation Â° firstPermutation).
+ * subsequently we apply secondPermutation (secondPermutation ° firstPermutation).
  */
 struct narray combinePermutations(struct narray firstPermutation,
-                                  struct narray secondPermutation) {
-     struct narray result = { .arr = { 0 } };
-     for (unsigned int i = 0; i < N; i++) {
-         result.arr[firstPermutation.arr[i]] = secondPermutation.arr[i];
-     }
-     return result;
+    struct narray secondPermutation) {
+    struct narray result = { .arr = { 0 } };
+    for (unsigned int i = 0; i < N; i++) {
+        result.arr[firstPermutation.arr[i]] = secondPermutation.arr[i];
+    }
+    return result;
 }
 
 /**
@@ -651,7 +709,8 @@ unsigned int isBottom(struct fractions probs) {
 
     if (WEAK_SECURITY == 2) {
         bottom = probs.frac[0].num && probs.frac[1].num;
-    } else {
+    }
+    else {
         bottom = (probs.frac[0].num || probs.frac[3].num) && (probs.frac[1].num || probs.frac[2].num);
     }
     return bottom;
@@ -688,14 +747,14 @@ unsigned int isValid(struct state s) {
     // Check whether every input is possible.
     for (unsigned int k = 0; k < NUMBER_PROBABILITIES; k++) {
         unsigned int seqIndexForThisProbability = nondet_uint();
-        assume (seqIndexForThisProbability < NUMBER_POSSIBLE_SEQUENCES);
+        assume(seqIndexForThisProbability < NUMBER_POSSIBLE_SEQUENCES);
         struct sequence seq = s.seq[seqIndexForThisProbability];
 
         /*
          * Now nondeterministic: We choose only sequences with probability > 0
          * Cut the trace if we need to find a protocol from a non-valid state.
          */
-        assume (seq.probs.frac[k].num);
+        assume(seq.probs.frac[k].num);
     }
 
     return res;
@@ -717,7 +776,7 @@ unsigned int isFinalState(struct state s) {
         unsigned int a = nondet_uint(); // Index of the first card.
         unsigned int b = nondet_uint(); // Index of the second card.
 
-        assume (a < N && b < N && a != b);
+        assume(a < N&& b < N&& a != b);
         unsigned int lowerCard = 0;
         unsigned int higherCard = 0;
 
@@ -728,23 +787,24 @@ unsigned int isFinalState(struct state s) {
                 unsigned int deciding = (s.seq[i].probs.frac[1].num) || (s.seq[i].probs.frac[2].num);
                 unsigned int first = s.seq[i].val[a];
                 unsigned int second = s.seq[i].val[b];
-                assume (first != second);
+                assume(first != second);
                 if (!higherCard && !lowerCard) {
                     // In a 1-sequence, the first card is higher, otherwise the second one.
                     higherCard = deciding ? first : second;
                     lowerCard = deciding ? second : first;
-                } else {
+                }
+                else {
                     /**
                      * Check whether for each 1-sequence, there is first the higher card AND
                      * for each 0-sequence, there is first the lower card. Also check whether
                      * there are only two cards used as output basis in this state.
                      */
-                    if (   (deciding
-                            && !(   first == higherCard
-                                 && second == lowerCard))
+                    if ((deciding
+                        && !(first == higherCard
+                            && second == lowerCard))
                         || (!deciding
-                            && !(   second == higherCard
-                                 && first == lowerCard))) {
+                            && !(second == higherCard
+                                && first == lowerCard))) {
                         done = 1;
                         res = 0;
                     }
@@ -759,7 +819,7 @@ unsigned int isFinalState(struct state s) {
  * Check a permutation set whether it is closed under transitivity.
  */
 void checkTransitivityOfPermutation(unsigned int permutationSet[MAX_PERM_SET_SIZE][N],
-                                    unsigned int permSetSize) {
+    unsigned int permSetSize) {
     unsigned int onlyPerm = (permSetSize == 1);
 
     if (FORCE_RANDOM_CUTS && !onlyPerm) {
@@ -792,7 +852,7 @@ void checkTransitivityOfPermutation(unsigned int permutationSet[MAX_PERM_SET_SIZ
             }
         }
         onlyRandomCuts &= (cntStaysFix == permSetSize);
-        assume (onlyRandomCuts);
+        assume(onlyRandomCuts);
     }
 
     if (!onlyPerm) {
@@ -800,9 +860,9 @@ void checkTransitivityOfPermutation(unsigned int permutationSet[MAX_PERM_SET_SIZ
         for (unsigned int i = 0; i < NUMBER_SUBGROUP_SIZES; i++) {
             permittedSoubgroupSize |= (permSetSize == subgroupSizes[i]);
         }
-        assume ((5 < N) || permittedSoubgroupSize);
+        assume((5 < N) || permittedSoubgroupSize);
 
-        // hier hin der check, ob permSetSize eine GrÃ¶ÃŸe aus der obigen Liste hat
+        // hier hin der check, ob permSetSize eine Größe aus der obigen Liste hat
         for (unsigned int i = 0; i < MAX_PERM_SET_SIZE; i++) {
             if (i < permSetSize) {
                 for (unsigned int j = 0; j < MAX_PERM_SET_SIZE; j++) {
@@ -815,20 +875,20 @@ void checkTransitivityOfPermutation(unsigned int permutationSet[MAX_PERM_SET_SIZ
                          * permutationSet. In fact this is a check for transitivity.
                          */
                         unsigned int resultIdx = nondet_uint();
-                        assume (resultIdx < permSetSize);
-                        struct narray firstPermutation  = { .arr = { 0 } };
+                        assume(resultIdx < permSetSize);
+                        struct narray firstPermutation = { .arr = { 0 } };
                         struct narray secondPermutation = { .arr = { 0 } };
 
                         for (unsigned int k = 0; k < N; k++) {
-                            firstPermutation.arr[k]  = permutationSet[i][k];
+                            firstPermutation.arr[k] = permutationSet[i][k];
                             secondPermutation.arr[k] = permutationSet[j][k];
                         }
 
                         struct narray permResultFromBothPerms =
                             combinePermutations(firstPermutation, secondPermutation);
                         for (unsigned int k = 0; k < N; k++) {
-                            assume (   permResultFromBothPerms.arr[k]
-                                    == permutationSet[resultIdx][k]);
+                            assume(permResultFromBothPerms.arr[k]
+                                == permutationSet[resultIdx][k]);
                         }
                     }
                 }
@@ -841,21 +901,22 @@ void checkTransitivityOfPermutation(unsigned int permutationSet[MAX_PERM_SET_SIZ
  * Update the possibilities of a sequence after a shuffle.
  */
 struct fractions recalculatePossibilities(struct fractions probs,
-                                          struct fractions resProbs,
-                                          unsigned int permSetSize) {
+    struct fractions resProbs,
+    unsigned int permSetSize) {
     for (unsigned int k = 0; k < NUMBER_PROBABILITIES; k++) {
         struct fraction prob = probs.frac[k];
-        unsigned int num   = prob.num;
+        unsigned int num = prob.num;
         unsigned int denom = prob.den;
 
         if (num && WEAK_SECURITY) {
             resProbs.frac[k].num |= num;
-        } else if (num) {
+        }
+        else if (num) {
             /**
              * Only update fractions in case we are in the
              * strong security setup.
              */
-            // Update denominator.
+             // Update denominator.
             resProbs.frac[k].den = denom * permSetSize;
             // Update numerator.
             resProbs.frac[k].num = (num * permSetSize) + denom;
@@ -868,8 +929,8 @@ struct fractions recalculatePossibilities(struct fractions probs,
  * Calculate the state after a shuffle operation starting from s with the given permutation set.
  */
 struct state doShuffle(struct state s,
-                       unsigned int permutationSet[MAX_PERM_SET_SIZE][N],
-                       unsigned int permSetSize) {
+    unsigned int permutationSet[MAX_PERM_SET_SIZE][N],
+    unsigned int permSetSize) {
     struct state res = emptyState;
     // For every sequence in the input state.
     for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
@@ -887,8 +948,8 @@ struct state doShuffle(struct state s,
                     // Recalculate possibilities.
                     res.seq[resultSeqIndex].probs =
                         recalculatePossibilities(s.seq[i].probs,
-                                                 res.seq[resultSeqIndex].probs,
-                                                 permSetSize);
+                            res.seq[resultSeqIndex].probs,
+                            permSetSize);
                 }
             }
         }
@@ -902,7 +963,7 @@ struct state doShuffle(struct state s,
 struct state applyShuffle(struct state s) {
     // Generate permutation set (shuffles are assumed to be uniformly distributed).
     unsigned int permSetSize = nondet_uint();
-    assume (0 < permSetSize && permSetSize <= MAX_PERM_SET_SIZE);
+    assume(0 < permSetSize && permSetSize <= MAX_PERM_SET_SIZE);
 
     unsigned int permutationSet[MAX_PERM_SET_SIZE][N] = { 0 };
     unsigned int takenPermutations[NUMBER_POSSIBLE_PERMUTATIONS] = { 0 };
@@ -916,9 +977,9 @@ struct state applyShuffle(struct state s) {
         if (i < permSetSize) { // Only generate permutations up to permSetSize.
             unsigned int permIndex = nondet_uint();
             // This ensures that the permutation sets are sorted lexicographically.
-            assume (lastChosenPermutationIndex <= permIndex);
-            assume (permIndex < NUMBER_POSSIBLE_PERMUTATIONS);
-            assume (!takenPermutations[permIndex]);
+            assume(lastChosenPermutationIndex <= permIndex);
+            assume(permIndex < NUMBER_POSSIBLE_PERMUTATIONS);
+            assume(!takenPermutations[permIndex]);
 
             takenPermutations[permIndex] = 1;
             lastChosenPermutationIndex = permIndex;
@@ -937,17 +998,17 @@ struct state applyShuffle(struct state s) {
     if (CLOSED_PROTOCOL || FORCE_RANDOM_CUTS) { // Check for closedness.
         checkTransitivityOfPermutation(permutationSet, permSetSize);
         // As in state trees, we want to include the identity if it is not a permutation.
-        assume (permSetSize == 1 || takenPermutations[0] > 0);
+        assume(permSetSize == 1 || takenPermutations[0] > 0);
     }
     // Apply the shuffle that was generated above.
     struct state res = doShuffle(s, permutationSet, permSetSize);
 
-    assume (isBottomFree(res));
+    assume(isBottomFree(res));
     return res;
 }
 
 struct turnStates alignAndAssignFractions(struct turnStates result,
-                                          struct fractions probs) {
+    struct fractions probs) {
     for (unsigned int i = 0; i < MAX_TURN_OBSERVATIONS; i++) {
         if (result.isUsed[i]) {
             unsigned int newDenominator = 1;
@@ -964,7 +1025,7 @@ struct turnStates alignAndAssignFractions(struct turnStates result,
                     }
                 }
                 // Only accept states with equal possibilities.
-                assume (probs.frac[j].num == probs.frac[0].num);
+                assume(probs.frac[j].num == probs.frac[0].num);
                 newDenominator *= probs.frac[j].den;
             }
             // Update fractions in result state.
@@ -995,9 +1056,9 @@ struct fractions computeTurnProbabilities(struct turnStates result) {
                 if (isStillPossible(resultSeq.probs)) {
                     for (unsigned int k = 0; k < NUMBER_PROBABILITIES; k++) {
                         struct fraction prob = resultSeq.probs.frac[k];
-                        unsigned int num   = prob.num;
+                        unsigned int num = prob.num;
                         unsigned int denom = prob.den;
-                        unsigned int newNum   = probs.frac[k].num;
+                        unsigned int newNum = probs.frac[k].num;
                         unsigned int newDenom = probs.frac[k].den;
                         /**
                          * If the sequence does not belong to an input sequence,
@@ -1005,7 +1066,8 @@ struct fractions computeTurnProbabilities(struct turnStates result) {
                          */
                         if (num && denom == newDenom) {
                             probs.frac[k].num += num;
-                        } else if (num && denom != newDenom) {
+                        }
+                        else if (num && denom != newDenom) {
                             probs.frac[k].num = (newNum * denom) + (num * newDenom);
                             probs.frac[k].den *= denom;
                         }
@@ -1040,7 +1102,7 @@ struct turnStates copyObservations(struct state s, unsigned int turnPosition) {
             unsigned int turnIdx = turnedCardNumber - 1;
             cntTurnObservations += result.isUsed[turnIdx] ? 0 : 1;
             result.isUsed[turnIdx] = 1;
-            assume (cntTurnObservations <= MAX_TURN_OBSERVATIONS);
+            assume(cntTurnObservations <= MAX_TURN_OBSERVATIONS);
             for (unsigned int j = 0; j < NUMBER_PROBABILITIES; j++) {
                 struct fraction prob = seq.probs.frac[j];
                 // Copy numerator.
@@ -1052,7 +1114,7 @@ struct turnStates copyObservations(struct state s, unsigned int turnPosition) {
             }
         }
     }
-    assume (MIN_TURN_OBSERVATIONS <= cntTurnObservations);
+    assume(MIN_TURN_OBSERVATIONS <= cntTurnObservations);
     return result;
 }
 
@@ -1065,7 +1127,7 @@ struct turnStates copyObservations(struct state s, unsigned int turnPosition) {
 struct turnStates applyTurn(struct state s) {
     // Choose turn position nondeterministically, otherwise we cannot do two turns in a row.
     unsigned int turnPosition = nondet_uint();
-    assume (turnPosition < N);
+    assume(turnPosition < N);
 
     struct turnStates result = copyObservations(s, turnPosition);
     if (WEAK_SECURITY) { // Weaker security check: output-possibilistic or input-possibilistic.
@@ -1077,12 +1139,13 @@ struct turnStates applyTurn(struct state s) {
                 // that the state contains a sequence for every in-/output possibility.
                 for (unsigned int i = 0; i < NUMBER_PROBABILITIES; i++) {
                     unsigned int seqIndex = nondet_uint();
-                    assume (seqIndex < NUMBER_POSSIBLE_SEQUENCES);
-                    assume (resultState.seq[seqIndex].probs.frac[i].num);
+                    assume(seqIndex < NUMBER_POSSIBLE_SEQUENCES);
+                    assume(resultState.seq[seqIndex].probs.frac[i].num);
                 }
             }
         }
-    } else { // Probabilistic security.
+    }
+    else { // Probabilistic security.
         struct fractions probs = computeTurnProbabilities(result);
         result = alignAndAssignFractions(result, probs);
     }
@@ -1090,28 +1153,29 @@ struct turnStates applyTurn(struct state s) {
     return result;
 }
 
+
+
+
 /**
 * MODULES:
 * finds the index of a given sequence (as an array) within a state.
 */
 unsigned  int findIndex(struct sequence seq) {
     unsigned int index = nondet_uint();
+    assume(index < NUMBER_POSSIBLE_SEQUENCES);
     for (int j = 0; j < N; j++) {
         assume(seq.val[j] != emptyState.seq[index].val[j]);
     }
     return index;
 }
-
 /**
 * MODULES:
 * searches for the endSequence in result.states[resultIdx]
 * if found, copy the probabilities/possibilities from seq to result.states[resultIdx] and return new result
 */
 struct protocolStates copyResults(struct sequence seq, struct protocolStates result, unsigned int resultIdx) {
-
     //find index of sequence within state that matches endSequence
     unsigned int index = findIndex(seq);
-
     // copy the probabilities/possibilities from seq to result.states[resultIdx] (! add the values -> cr shuffle)
     for (unsigned int j = 0; j < NUMBER_PROBABILITIES; j++) {
         struct fraction prob = seq.probs.frac[j];
@@ -1126,62 +1190,91 @@ struct protocolStates copyResults(struct sequence seq, struct protocolStates res
     }
     return result;
 }
-
-
-
-struct protocolStates doFrXor(struct state s, unsigned int com1A, unsigned int com1B, unsigned int com2A, unsigned int com2B) {
+struct protocolStates doProtocols(unsigned int protocolChosen, struct state s, unsigned int com1A, unsigned int com1B, unsigned int com2A, unsigned int com2B, unsigned int help1, unsigned int help2) {
     struct protocolStates result;
     // Initialise N empty states.
     for (unsigned int i = 0; i < MAX_PROTOCOL_ENDSTATES; i++) {
         result.states[i] = emptyState;
         result.isUsed[i] = 0;
     }
-    for (unsigned int j = 0; j < NUMBER_POSSIBLE_SEQUENCES; j++) {
-        struct sequence seq = s.seq[j];
-        //unsigned int endState = seq.val;
-        if (isStillPossible(seq.probs)) {
-            if ((isZero(seq.val[com1A], seq.val[com1B]) && isZero(seq.val[com2A], seq.val[com2B])) || ((isOne(seq.val[com1A], seq.val[com1B]) && isOne(seq.val[com2A], seq.val[com2B])))) { // 1212 & 2121
-                seq.val[com1A] = 1;
-                seq.val[com1B] = 2;
-                seq.val[com2A] = 1;
-                seq.val[com2B] = 2;
-            }
-            else { // 1221 & 2112
-                seq.val[com1A] = 2;
-                seq.val[com1B] = 1;
-                seq.val[com2A] = 1;
-                seq.val[com2B] = 2;
+    for (unsigned int i = 0; i < MAX_PROTOCOL_ENDSTATES; i++) {
+        for (unsigned int j = 0; j < NUMBER_POSSIBLE_SEQUENCES; j++) {
+            struct sequence seq = s.seq[j];
+            if (isStillPossible(seq.probs)) {
+                unsigned int idx = 0;
+                if (isZero(seq.val[com1A], seq.val[com1B])) {
+                    if (isZero(seq.val[com2A], seq.val[com2B])) {
+                        // 0101  
+                        idx = 0;
+                    }
+                    else if (isOne(seq.val[com2A], seq.val[com2B])) {
+                        // 0110
+                        idx = 1;
+                    }
+                }
+                else if (isOne(seq.val[com1A], seq.val[com1B])) {
+                    if (isZero(seq.val[com2A], seq.val[com2B])) {
+                        // 1001
+                        idx = 2;
+                    }
+                    else if (isOne(seq.val[com2A], seq.val[com2B])) {
+                        // 1010
+                        idx = 3;
+                    }
+                }
 
+                seq.val[com1A] = protocolTable[protocolChosen][i][idx][0];
+                unsigned int asdf = seq.val[com1A];
+                seq.val[com1B] = protocolTable[protocolChosen][i][idx][1];
+                asdf = seq.val[com1B];
+                seq.val[com2A] = protocolTable[protocolChosen][i][idx][2];
+                asdf = seq.val[com2A];
+                seq.val[com2B] = protocolTable[protocolChosen][i][idx][3];
+                asdf = seq.val[com2B];
+                // if we have one (or more) helper card
+                if (protocolChosen == FR_AND || protocolChosen == FR_COPY
+                    || protocolChosen == LV_AND || protocolChosen == LV_OR) {
+                    seq.val[help1] = protocolTable[protocolChosen][i][idx][4];
+                    // if we have two helper cards
+                    if (protocolChosen == FR_AND || protocolChosen == FR_COPY) {
+                        seq.val[help2] = protocolTable[protocolChosen][i][idx][5];
+                    }
+                }
+                result = copyResults(seq, result, i);
+                result.isUsed[i] = 1;
             }
-            result = copyResults(seq, result, 0);
-            result.isUsed[0] = 1;
         }
     }
-    for (unsigned int k = 0; k < NUMBER_POSSIBLE_SEQUENCES; k++) {
-        struct sequence seq = s.seq[k];
-        //unsigned int endState = seq.val;
-        if (isStillPossible(seq.probs)) {
-            if ((isZero(seq.val[com1A], seq.val[com1B]) && isZero(seq.val[com2A], seq.val[com2B])) || ((isOne(seq.val[com1A], seq.val[com1B]) && isOne(seq.val[com2A], seq.val[com2B])))) { // 1212 & 2121
-                seq.val[com1A] = 2;
-                seq.val[com1B] = 1;
-                seq.val[com2A] = 2;
-                seq.val[com2B] = 1;
-            }
-            else { // 1221 & 2112
-                seq.val[com1A] = 1;
-                seq.val[com1B] = 2;
-                seq.val[com2A] = 2;
-                seq.val[com2B] = 1;
-
-            }
-            result = copyResults(seq, result, 1);
-            result.isUsed[1] = 1;
-        }
+    for (unsigned int l = 0; l < MAX_PROTOCOL_ENDSTATES; l++) {
+        assume(isBottomFree(result.states[l]));
     }
     return result;
 }
-
-struct protocolStates applyFrXor(struct state s) {
+struct state applyProtocols(struct state s) {
+    // check that the chosen protocol is actually 'allowed'
+    unsigned int protocolChosen = nondet_uint();
+    assume(protocolChosen >= 0 && protocolChosen < 5);
+    if (USE_FR_AND == 0) {
+        assume(protocolChosen != FR_AND);
+    }
+    if (USE_FR_XOR == 0) {
+        assume(protocolChosen != FR_XOR);
+    }
+    if (USE_LV_AND == 0) {
+        assume(protocolChosen != LV_AND);
+    }
+    if (USE_LV_OR == 0) {
+        assume(protocolChosen != LV_OR);
+    }
+    if (USE_FR_COPY == 0) {
+        assume(protocolChosen != FR_COPY);
+    }
+    // create resulting states
+    struct protocolStates resultingStates;
+    for (unsigned int i = 0; i < MAX_PROTOCOL_ENDSTATES; i++) {
+        resultingStates.states[i] = emptyState;
+        resultingStates.isUsed[i] = 0;
+    }
     // pick 4 cards that represent the two commitments
     unsigned int com1A = nondet_uint();
     unsigned int com1B = nondet_uint();
@@ -1191,133 +1284,68 @@ struct protocolStates applyFrXor(struct state s) {
     assume(com1A != com1B && com1A != com2A && com1A != com2B);
     assume(com1B != com2A && com1B != com2B);
     assume(com2A != com2B);
-
-    struct protocolStates result = doFrXor(s, com1A, com1B, com2A, com2B);
-    // check for security? s. apply Turn -> not really necessary because we assume that the protocol is secure
-    return result;
-}
-
-/**
-* MODULES:
-*  perform the protocol->is there a smart way ? if not: hardcode the results
-*  check for the input by iterating through all sequences and checking ifStillPossible
-*  then check what kind of output they would make for each different possible output and sort them (the probability) in
-*/
-struct protocolStates doFrAnd(struct state s, unsigned int com1A, unsigned int com1B, unsigned int com2A, unsigned int com2B, unsigned int help1, unsigned int help2) {
-    struct protocolStates result;
-    // Initialise N empty states.
-    for (unsigned int i = 0; i < MAX_PROTOCOL_ENDSTATES; i++) {
-        result.states[i] = emptyState;
-        result.isUsed[i] = 0;
-    }
-
-    for (unsigned int j = 0; j < NUMBER_POSSIBLE_SEQUENCES; j++) {
-        struct sequence seq = s.seq[j];
-        //unsigned int endState = seq.val;
-        if (isStillPossible(seq.probs)) {
-            if (isZero(seq.val[com2A], seq.val[com2B])) { // 121212 & 211212
-                seq.val[com1A] = 1;
-                seq.val[com1B] = 2;
-                //endState[com2A] = 1;
-                //endState[com2B] = 2;
-                //endState[help1] = 1;
-                //endState[help2] = 2;
-            }
-            else {
-                if (isZero(seq.val[com1A], seq.val[com1B])) { // 122112
-                    //endState[com1A] = 1;
-                    //endState[com1B] = 2;
-                    //endState[com2A] = 2;
-                    //endState[com2B] = 1;
-                    //endState[help1] = 1;
-                    //endState[help2] = 2;
-
-                }
-                else { //212112
-                    seq.val[com1A] = 1;
-                    seq.val[com1B] = 2;
-                    seq.val[com2A] = 1;
-                    seq.val[com2B] = 2;
-                    seq.val[help1] = 2;
-                    seq.val[help2] = 1;
-                }
-            }
-            result = copyResults(seq, result, 0);
-            result.isUsed[0] = 1;
-        }
-    }
-
-    for (unsigned int k = 0; k < NUMBER_POSSIBLE_SEQUENCES; k++) {
-        struct sequence seq = s.seq[k];
-        //unsigned int endState = seq.val;
-        if (isStillPossible(seq.probs)) {
-            if (isZero(seq.val[com2A], seq.val[com2B])) { // 121212 & 211212
-                seq.val[com1A] = 2;
-                seq.val[com1B] = 1;
-                //endState[com2A] = 1;
-                //endState[com2B] = 2;
-                //endState[help1] = 1;
-                //endState[help2] = 2;
-            }
-            else {
-                if (isZero(seq.val[com1A], seq.val[com1B])) { // 122112
-                    seq.val[com1A] = 2;
-                    seq.val[com1B] = 1;
-                    seq.val[com2A] = 1;
-                    seq.val[com2B] = 2;
-                    seq.val[help1] = 2;
-                    seq.val[help2] = 1;
-
-                }
-                else { //212112
-                    //endState[com1A] = 2;
-                    //endState[com1B] = 1;
-                    //endState[com2A] = 2;
-                    //endState[com2B] = 1;
-                    //endState[help1] = 1;
-                    //endState[help2] = 2;
-                }
-            }
-            result = copyResults(seq, result, 1);
-            result.isUsed[1] = 1;
-        }
-    }
-
-    return result;
-}
-
-struct protocolStates applyFrAnd(struct state s) {
-    // ATTENTION: we need a new state that is similar but not the same to turnStates, 
-    // because the TurnStates have the size of POSSIBLE_OBSERVATION
-    // ATTENTION: do we differentiate for output possibilistic Security and the rest?
-
-    // pick 4 cards that represent the two commitments
-    unsigned int com1A = nondet_uint();
-    unsigned int com1B = nondet_uint();
-    unsigned int com2A = nondet_uint();
-    unsigned int com2B = nondet_uint();
-    assume(com1A < N&& com1B < N&& com2A < N&& com2B < N);
-    assume(com1A != com1B && com1A != com2A && com1A != com2B);
-    assume(com1B != com2A && com1B != com2B);
-    assume(com2A != com2B);
-
-    // pick 2 cards that represent the helper cards
-    unsigned int help1 = nondet_uint();
-    unsigned int help2 = nondet_uint();
-    assume(help1 < N&& help2 < N);
-    assume(help1 != com1A && help1 != com1B && help1 != com2A && help1 != com2B);
-    assume(help2 != com1A && help2 != com1B && help2 != com2A && help2 != com2B);
-    // check that helper cards are the same all througout every possible sequence in the state
+    unsigned int help1 = 0;
+    unsigned int help2 = 0;
     for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
         // if the probability/possibility of this state is not 0 
         if (isStillPossible(s.seq[i].probs)) {
-            assume(isZero((s.seq[i].val[help1]), s.seq[i].val[help2]));
+            // check that througout every possible sequence in the state we have chosen two different cards for our commitments
+            assume(s.seq[i].val[com1A] != s.seq[i].val[com1B]);
+            assume(s.seq[i].val[com2A] != s.seq[i].val[com2B]);
         }
     }
-    struct protocolStates result = doFrAnd(s, com1A, com1B, com2A, com2B, help1, help2);
-    // check for security? s. apply Turn -> not really necessary because we assume that the protocol is secure
-    return result;
+    // for copy we only have two commitments and four help cards
+    if (protocolChosen == FR_COPY) {
+        for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+            // if the probability/possibility of this state is not 0 
+            if (isStillPossible(s.seq[i].probs)) {
+                // check that helper cards are the same all throughout every possible sequence in the state
+                assume(isZero((s.seq[i].val[com2A]), s.seq[i].val[com2B]));
+            }
+        }
+    }
+    //protocols with five cards
+    if (protocolChosen == LV_AND || protocolChosen == LV_OR) {
+        help1 = nondet_uint();
+        assume(help1 < N);
+        assume(help1 != com1A && help1 != com1B && help1 != com2A && help1 != com2B);
+        for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+            // if the probability/possibility of this state is not 0 
+            if (isStillPossible(s.seq[i].probs)) {
+                // check that helper cards are the same all throughout every possible sequence in the state
+                if (protocolChosen == LV_AND) {
+                    // for LV_AND the helper card is 2
+                    assume(s.seq[i].val[help1] == 2);
+                }
+                else if (protocolChosen == LV_OR) {
+                    // for LV_OR the helper card is 1
+                    assume(s.seq[i].val[help1] == 1);
+                }
+            }
+        }
+    }
+    if (protocolChosen == FR_AND || protocolChosen == FR_COPY) {
+        help1 = nondet_uint();
+        help2 = nondet_uint();
+        assume(help1 < N&& help2 < N);
+        assume(help1 != com1A && help1 != com1B && help1 != com2A && help1 != com2B);
+        assume(help2 != com1A && help2 != com1B && help2 != com2A && help2 != com2B && help2 != help1);
+        for (unsigned int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+            // if the probability/possibility of this state is not 0 
+            if (isStillPossible(s.seq[i].probs)) {
+                // check that helper cards are the same all throughout every possible sequence in the state
+                assume(isZero((s.seq[i].val[help1]), s.seq[i].val[help2]));
+            }
+        }
+    }
+    resultingStates = doProtocols(protocolChosen, s, com1A, com1B, com2A, com2B, help1, help2);
+    //as with TURN, choose one output nondeterministically to look at further
+    unsigned int stateIdx = nondet_uint();
+    assume(stateIdx < MAX_PROTOCOL_ENDSTATES);
+    assume(resultingStates.isUsed[stateIdx]);
+    return resultingStates.states[stateIdx];
 }
+
 
 
 /**
@@ -1347,7 +1375,6 @@ unsigned int performActions(struct state s) {
         else {
             assume(A == 3);
         }
-
         unsigned int next = i + 1;
 
         if (action == TURN) {
@@ -1364,80 +1391,52 @@ unsigned int performActions(struct state s) {
             * from the trace that the program gives us for one branch
             */
             unsigned int stateIdx = nondet_uint();
-            assume (stateIdx < MAX_TURN_OBSERVATIONS);
-            assume (possiblePostStates.isUsed[stateIdx]);
+            assume(stateIdx < MAX_TURN_OBSERVATIONS);
+            assume(possiblePostStates.isUsed[stateIdx]);
             reachableStates[next] = possiblePostStates.states[stateIdx];
             if (!FINITE_RUNTIME) { // Restart-free Las-Vegas.
                 if (isFinalState(reachableStates[next])) {
-                    assume (next == L);
+                    assume(next == L);
                     result = 1;
                 }
-            } else {
+            }
+            else {
                 unsigned int isFinalTurn = 1;
                 for (unsigned int j = 0; j < MAX_TURN_OBSERVATIONS; j++) {
-                    if (    possiblePostStates.isUsed[j]
+                    if (possiblePostStates.isUsed[j]
                         && !isFinalState(possiblePostStates.states[j])) {
                         isFinalTurn = 0;
                     }
                 }
                 if (isFinalTurn) {
-                    assume (next == L);
+                    assume(next == L);
                     result = 1;
                 }
             }
-        } else if (action == SHUFFLE) {
+        }
+        else if (action == SHUFFLE) {
             /**
              * Apply a nondet shuffle and store the result in
              * the reachableStates array.
              */
             reachableStates[next] = applyShuffle(reachableStates[i]);
             if (isFinalState(reachableStates[next])) {
-                assume (next == L);
+                assume(next == L);
                 result = 1;
             }
         }
         else if (action == PROTOCOL) {
-            unsigned int protocolChosen = nondet_uint();
-            if (USE_FR_AND == 0) {
-                assume(protocolChosen != FR_AND);
-            }
-            if (USE_FR_XOR == 0) {
-                assume(protocolChosen != FR_XOR);
-            }
-            if (USE_LV_AND == 0) {
-                assume(protocolChosen != LV_AND);
-            }
-            if (USE_LV_OR == 0) {
-                assume(protocolChosen != LV_OR);
-            }
-            struct protocolStates resultingStates;
-            for (unsigned int i = 0; i < MAX_PROTOCOL_ENDSTATES; i++) {
-                resultingStates.states[i] = emptyState;
-                resultingStates.isUsed[i] = 0;
-            }
-            if (protocolChosen == FR_AND) {
-                resultingStates = applyFrAnd(s);
-            }
-            else if (protocolChosen == FR_XOR) {
-                resultingStates = applyFrXor(s);
-            }
-            else if (protocolChosen == LV_AND) {
-            }
-            else if (protocolChosen == LV_OR) {
-            }
-            //as with TURN, choose one output nondeterministically to look at further
-            unsigned int stateIdx = nondet_uint();
-            assume(stateIdx < MAX_PROTOCOL_ENDSTATES);
-            assume(resultingStates.isUsed[stateIdx]);
-            reachableStates[next] = resultingStates.states[stateIdx];
+
+            reachableStates[next] = applyProtocols(reachableStates[i]);
             // only for not Final Runtime
             if (isFinalState(reachableStates[next])) {
                 assume(next == L);
                 result = 1;
             }
-        } else {
+        }
+        else {
             // No valid action was chosen. This must not happen.
-            assume (next == L);
+            assume(next == L);
         }
     }
     return result;
@@ -1475,23 +1474,26 @@ unsigned int isOneOne(unsigned int arr[N]) {
  * Returns if the given sequnce is a input sequence in the start state.
  */
 unsigned int inputProbability(unsigned int start,
-                              unsigned int arr[N]) {
-    assume (start < NUMBER_START_SEQS);
+    unsigned int arr[N]) {
+    assume(start < NUMBER_START_SEQS);
     unsigned int res = 0;
     if (start == 0) {
         res = isZeroZero(arr);
-    } else if (start == 1) {
+    }
+    else if (start == 1) {
         res = isZeroOne(arr);
-    } else if (start == 2) {
+    }
+    else if (start == 2) {
         res = isOneZero(arr);
-    } else if (start == 3) {
+    }
+    else if (start == 3) {
         res = isOneOne(arr);
     }
     return res;
 }
 
 int main() {
-	// Initialise an empty state
+    // Initialise an empty state
     emptyState = getEmptyState();
     struct state startState = emptyState;
 
@@ -1500,16 +1502,16 @@ int main() {
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
         start[i] = getStartSequence();
     }
-    assume (isZeroZero(start[0].arr));
+    assume(isZeroZero(start[0].arr));
 
-    assume (NUMBER_START_SEQS == 4);
-    assume (start[0].arr[0] == start[1].arr[0]);
-    assume (start[1].arr[0] != start[2].arr[0]);
-    assume (start[2].arr[0] == start[3].arr[0]);
+    assume(NUMBER_START_SEQS == 4);
+    assume(start[0].arr[0] == start[1].arr[0]);
+    assume(start[1].arr[0] != start[2].arr[0]);
+    assume(start[2].arr[0] == start[3].arr[0]);
 
-    assume (start[0].arr[2] == start[2].arr[2]);
-    assume (start[0].arr[2] != start[1].arr[2]);
-    assume (start[1].arr[2] == start[3].arr[2]);
+    assume(start[0].arr[2] == start[2].arr[2]);
+    assume(start[0].arr[2] != start[1].arr[2]);
+    assume(start[1].arr[2] == start[3].arr[2]);
 
     unsigned int arrSeqIdx[NUMBER_START_SEQS];
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
@@ -1524,7 +1526,8 @@ int main() {
             // Assign every sequence to their input possibility.
             inputPoss = inputProbability(i, start[i].arr);
             pos = i;
-        } else {
+        }
+        else {
             // Assign every sequence to their output result.
             inputPoss = (isOneOne(start[i].arr) || isZeroZero(start[i].arr));
         }
@@ -1542,16 +1545,16 @@ int main() {
     //unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
     //unsigned int arrIdx = arrSeqIdx[lastStartSeq];
     //unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
-    
+
 
     // Store all possible Permutations
     stateWithAllPermutations = getStateWithAllPermutations();
 
     // Do actions nondeterministically until a protocol is found.
     unsigned int foundValidProtocol = performActions(startState);
-    assume (foundValidProtocol);
+    assume(foundValidProtocol);
 
-	// Fail the check iff a protocol is found, so we can read out the trace including the protocol.
-    assert (0);
+    // Fail the check iff a protocol is found, so we can read out the trace including the protocol.
+    assert(0);
     return 0;
 }
