@@ -99,7 +99,7 @@ void __CPROVER_assert(int x, char y[]);
     * is used (0: not used, 1: used)
     */
 #ifndef USE_FR_AND
-#define USE_FR_AND 0
+#define USE_FR_AND 1
 #endif 
     /**
     * AND by Takaaki Mizuki and Hideaki Sone (2009) -> Finite Runtime, 6 cards, 2 steps
@@ -115,7 +115,7 @@ void __CPROVER_assert(int x, char y[]);
     * is used (0: not used, 1: used)
     */
 #ifndef USE_FR_XOR
-#define USE_FR_XOR 0
+#define USE_FR_XOR 1
 #endif 
     /**
     * XOR by Takaaki Mizuki and Hideaki Sone(2009) -> Finite Runtime, 4 cards, 2 steps
@@ -178,42 +178,49 @@ void __CPROVER_assert(int x, char y[]);
     * therefore the struct PROTOCOL_TABLE should have PROTOCOL_TABLE[5][MAX_PROTOCOL_ENDSTATES][4][6]
     * and the FR_AND_TABLE & co schould be FR_AND_TABLE[MAX_PROTOCOL_ENDSTATES][4]
     */
-const unsigned int VAL_111222[6] = { 1,1,1,2,2,2 };
-const unsigned int VAL_112122[6] = { 1,1,2,1,2,2 };
-const unsigned int VAL_112212[6] = { 1,1,2,2,1,2 };
-const unsigned int VAL_112221[6] = { 1,1,2,2,2,1 };
-const unsigned int VAL_121122[6] = { 1,2,1,1,2,2 };
-const unsigned int VAL_121212[6] = { 1,2,1,2,1,2 };
-const unsigned int VAL_121221[6] = { 1,2,1,2,2,1 };
-const unsigned int VAL_122112[6] = { 1,2,2,1,1,2 };
-const unsigned int VAL_122121[6] = { 1,2,2,1,2,1 };
-const unsigned int VAL_122211[6] = { 1,2,2,2,1,1 };
-const unsigned int VAL_211122[6] = { 2,1,1,1,2,2 };
-const unsigned int VAL_211212[6] = { 2,1,1,2,1,2 };
-const unsigned int VAL_211221[6] = { 2,1,1,2,2,1 };
-const unsigned int VAL_212112[6] = { 2,1,2,1,1,2 };
-const unsigned int VAL_212121[6] = { 2,1,2,1,2,1 };
-const unsigned int VAL_212211[6] = { 2,1,2,2,1,1 };
-const unsigned int VAL_221112[6] = { 2,2,1,1,1,2 };
-const unsigned int VAL_221121[6] = { 2,2,1,1,2,1 };
-const unsigned int VAL_221211[6] = { 2,2,1,2,1,1 };
-const unsigned int VAL_222111[6] = { 2,2,2,1,1,1 };
-const unsigned int VAL_12122[6] = { 1,2,1,2,2,0 };
-const unsigned int VAL_12212[6] = { 1,2,2,1,2,0 };
-const unsigned int VAL_21212[6] = { 2,1,2,1,2,0 };
-const unsigned int VAL_21122[6] = { 2,1,1,2,2,0 };
-const unsigned int VAL_1212[6] = { 1,2,1,2,0,0 };
-const unsigned int VAL_2112[6] = { 2,1,1,2,0,0 };
-const unsigned int VAL_2121[6] = { 2,1,2,1,0,0 };
-const unsigned int VAL_1221[6] = { 1,2,2,1,0,0 };
-const unsigned int VAL_2211[6] = { 2,2,1,1,0,0 };
-const unsigned int VAL_PLACEHOLDER[6] = { 0,0,0,0,0,0 };
-const unsigned int FR_AND_TABLE[2][4][6] = { { VAL_121212, VAL_122112,VAL_121212, VAL_121221 }, {VAL_211212,VAL_211221, VAL_211212, VAL_212112} };
-const unsigned int FR_XOR_TABLE[2][4][6] = { { VAL_1212, VAL_2112, VAL_2112, VAL_1212 }, {VAL_2121, VAL_1221, VAL_1221, VAL_2121} };
-const unsigned int LV_AND_TABLE[2][4][6] = { { VAL_12212, VAL_12212, VAL_12212, VAL_12122 }, {VAL_21122, VAL_21122, VAL_21122, VAL_21212} };
-const unsigned int LV_OR_TABLE[2][4][6] = { { VAL_2211, VAL_1212, VAL_1212, VAL_1212 }, {VAL_2121, VAL_2112, VAL_2112, VAL_2112 } };
-const unsigned int FR_COPY_TABLE[2][4][6] = { { VAL_121212, VAL_PLACEHOLDER, VAL_122121, VAL_PLACEHOLDER }, {VAL_212121, VAL_PLACEHOLDER, VAL_211212, VAL_PLACEHOLDER} };
-const unsigned int PROTOCOL_TABLE[5][2][4][6] = { FR_AND_TABLE, FR_XOR_TABLE, LV_AND_TABLE, LV_OR_TABLE, FR_COPY_TABLE };
+unsigned int VAL_111222[6] = { 1,1,1,2,2,2 };
+unsigned int VAL_112122[6] = { 1,1,2,1,2,2 };
+unsigned int VAL_112212[6] = { 1,1,2,2,1,2 };
+unsigned int VAL_112221[6] = { 1,1,2,2,2,1 };
+unsigned int VAL_121122[6] = { 1,2,1,1,2,2 };
+unsigned int VAL_121212[6] = { 1,2,1,2,1,2 };
+unsigned int VAL_121221[6] = { 1,2,1,2,2,1 };
+unsigned int VAL_122112[6] = { 1,2,2,1,1,2 };
+unsigned int VAL_122121[6] = { 1,2,2,1,2,1 };
+unsigned int VAL_122211[6] = { 1,2,2,2,1,1 };
+unsigned int VAL_211122[6] = { 2,1,1,1,2,2 };
+unsigned int VAL_211212[6] = { 2,1,1,2,1,2 };
+unsigned int VAL_211221[6] = { 2,1,1,2,2,1 };
+unsigned int VAL_212112[6] = { 2,1,2,1,1,2 };
+unsigned int VAL_212121[6] = { 2,1,2,1,2,1 };
+unsigned int VAL_212211[6] = { 2,1,2,2,1,1 };
+unsigned int VAL_221112[6] = { 2,2,1,1,1,2 };
+unsigned int VAL_221121[6] = { 2,2,1,1,2,1 };
+unsigned int VAL_221211[6] = { 2,2,1,2,1,1 };
+unsigned int VAL_222111[6] = { 2,2,2,1,1,1 };
+unsigned int VAL_12122[6] = { 1,2,1,2,2,0 };
+unsigned int VAL_12212[6] = { 1,2,2,1,2,0 };
+unsigned int VAL_21212[6] = { 2,1,2,1,2,0 };
+unsigned int VAL_21122[6] = { 2,1,1,2,2,0 };
+unsigned int VAL_1212[6] = { 1,2,1,2,0,0 };
+unsigned int VAL_2112[6] = { 2,1,1,2,0,0 };
+unsigned int VAL_2121[6] = { 2,1,2,1,0,0 };
+unsigned int VAL_1221[6] = { 1,2,2,1,0,0 };
+unsigned int VAL_2211[6] = { 2,2,1,1,0,0 };
+
+unsigned int VAL_PLACEHOLDER[6] = { 0,0,0,0,0,0 };
+
+//unsigned int FR_AND_TABLE[2][4][6] = { { { 1,2,1,2,1,2 }, { 1,2,2,1,1,2 },{ 1,2,1,2,1,2 }, { 1,2,1,2,2,1 } }, { { 2,1,1,2,1,2 },{ 2,1,1,2,2,1 }, { 2,1,1,2,1,2 },  { 2,1,2,1,1,2 } } };
+//unsigned int FR_XOR_TABLE[2][4][6] = { { { 1,2,1,2,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }, { 1,2,1,2,0,0 } }, {{ 2,1,2,1,0,0 }, { 1,2,2,1,0,0 }, { 1,2,2,1,0,0 }, { 2,1,2,1,0,0 }} };
+//unsigned int LV_AND_TABLE[2][4][6] = { { { 1,2,2,1,2,0 }, { 1,2,2,1,2,0 }, { 1,2,2,1,2,0 },  { 1,2,1,2,2,0 } }, { { 2,1,1,2,2,0 },  { 2,1,1,2,2,0 },  { 2,1,1,2,2,0 }, { 2,1,2,1,2,0 }} };
+//unsigned int LV_OR_TABLE[2][4][6] = { { { 2,2,1,1,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 } }, {{ 2,1,2,1,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 } } };
+//unsigned int FR_COPY_TABLE[2][4][6] = { { { 1,2,1,2,1,2 }, { 0,0,0,0,0,0 }, { 1,2,2,1,2,1 }, { 0,0,0,0,0,0 } }, { { 2,1,2,1,2,1 }, { 0,0,0,0,0,0 }, { 2,1,1,2,1,2 }, { 0,0,0,0,0,0 }} };
+//unsigned int protocolTable[5][2][4][6] = { FR_AND_TABLE, FR_XOR_TABLE, LV_AND_TABLE, LV_OR_TABLE, FR_COPY_TABLE };
+unsigned int protocolTable[5][2][4][6] = { { { { 1,2,1,2,1,2 }, { 1,2,2,1,1,2 },{ 1,2,1,2,1,2 }, { 1,2,1,2,2,1 } }, { { 2,1,1,2,1,2 },{ 2,1,1,2,2,1 }, { 2,1,1,2,1,2 },  { 2,1,2,1,1,2 } } }, 
+{ { { 1,2,1,2,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }, { 1,2,1,2,0,0 } }, {{ 2,1,2,1,0,0 }, { 1,2,2,1,0,0 }, { 1,2,2,1,0,0 }, { 2,1,2,1,0,0 }} },
+{ { { 1,2,2,1,2,0 }, { 1,2,2,1,2,0 }, { 1,2,2,1,2,0 },  { 1,2,1,2,2,0 } }, { { 2,1,1,2,2,0 },  { 2,1,1,2,2,0 },  { 2,1,1,2,2,0 }, { 2,1,2,1,2,0 }} },
+{ { { 2,2,1,1,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 } }, {{ 2,1,2,1,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 } } },
+{ { { 1,2,1,2,1,2 }, { 0,0,0,0,0,0 }, { 1,2,2,1,2,1 }, { 0,0,0,0,0,0 } }, { { 2,1,2,1,2,1 }, { 0,0,0,0,0,0 }, { 2,1,1,2,1,2 }, { 0,0,0,0,0,0 }} } };
 
 
 /**
@@ -1147,6 +1154,7 @@ struct turnStates applyTurn(struct state s) {
 */
 unsigned  int findIndex(struct sequence seq) {
     unsigned int index = nondet_uint();
+    assume(index < NUMBER_POSSIBLE_SEQUENCES);
     for (int j = 0; j < N; j++) {
         assume(seq.val[j] != emptyState.seq[index].val[j]);
     }
@@ -1184,42 +1192,49 @@ struct protocolStates doProtocols(unsigned int protocolChosen, struct state s, u
     for (unsigned int i = 0; i < MAX_PROTOCOL_ENDSTATES; i++) {
         for (unsigned int j = 0; j < NUMBER_POSSIBLE_SEQUENCES; j++) {
             struct sequence seq = s.seq[j];
-            unsigned int idx = 0;
-            if (isZero(seq.val[com1A], seq.val[com1B])) {
-                if (isZero(seq.val[com2A], seq.val[com2B])) {
-                    // 0101  
-                    idx = 0;
+            if (isStillPossible(seq.probs)) {
+                unsigned int idx = 0;
+                if (isZero(seq.val[com1A], seq.val[com1B])) {
+                    if (isZero(seq.val[com2A], seq.val[com2B])) {
+                        // 0101  
+                        idx = 0;
+                    }
+                    else if (isOne(seq.val[com2A], seq.val[com2B])) {
+                        // 0110
+                        idx = 1;
+                    }
                 }
-                else if (isOne(seq.val[com2A], seq.val[com2B])) {
-                    // 0110
-                    idx = 1;
+                else if (isOne(seq.val[com1A], seq.val[com1B])) {
+                    if (isZero(seq.val[com2A], seq.val[com2B])) {
+                        // 1001
+                        idx = 2;
+                    }
+                    else if (isOne(seq.val[com2A], seq.val[com2B])) {
+                        // 1010
+                        idx = 3;
+                    }
                 }
+                
+                seq.val[com1A] = protocolTable[protocolChosen][i][idx][0];
+                unsigned int asdf = seq.val[com1A];
+                seq.val[com1B] = protocolTable[protocolChosen][i][idx][1];
+                asdf = seq.val[com1B];
+                seq.val[com2A] = protocolTable[protocolChosen][i][idx][2];
+                asdf = seq.val[com2A];
+                seq.val[com2B] = protocolTable[protocolChosen][i][idx][3];
+                asdf = seq.val[com2B];
+                // if we have one (or more) helper card
+                if (protocolChosen == FR_AND || protocolChosen == FR_COPY
+                    || protocolChosen == LV_AND || protocolChosen == LV_OR) {
+                    seq.val[help1] = protocolTable[protocolChosen][i][idx][4];
+                    // if we have two helper cards
+                    if (protocolChosen == FR_AND || protocolChosen == FR_COPY) {
+                        seq.val[help2] = protocolTable[protocolChosen][i][idx][5];
+                    }
+                }
+                result = copyResults(seq, result, i);
+                result.isUsed[i] = 1;
             }
-            else if (isOne(seq.val[com1A], seq.val[com1B])) {
-                if (isZero(seq.val[com2A], seq.val[com2B])) {
-                    // 1001
-                    idx = 2;
-                }
-                else if (isOne(seq.val[com2A], seq.val[com2B])) {
-                    // 1010
-                    idx = 3;
-                }
-            }
-            seq.val[com1A] = PROTOCOL_TABLE[protocolChosen][i][idx][0];
-            seq.val[com1B] = PROTOCOL_TABLE[protocolChosen][i][idx][1];
-            seq.val[com2A] = PROTOCOL_TABLE[protocolChosen][i][idx][2];
-            seq.val[com2B] = PROTOCOL_TABLE[protocolChosen][i][idx][3];
-            // if we have one (or more) helper card
-            if (protocolChosen == FR_AND || protocolChosen == FR_COPY
-                || protocolChosen == LV_AND || protocolChosen == LV_OR) {
-                seq.val[help1] = PROTOCOL_TABLE[protocolChosen][i][idx][4];
-                // if we have two helper cards
-                if (protocolChosen == FR_AND || protocolChosen == FR_COPY) {
-                    seq.val[help2] = PROTOCOL_TABLE[protocolChosen][i][idx][5];
-                }
-            }
-            result = copyResults(seq, result, i);
-            result.isUsed[0] = 1;
         }
     }
     for (unsigned int l = 0; l < MAX_PROTOCOL_ENDSTATES; l++) {
