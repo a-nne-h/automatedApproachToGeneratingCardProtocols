@@ -1199,7 +1199,7 @@ struct protocolStates doProtocols(unsigned int protocolChosen, struct state s, u
                 if (isZero(seq.val[com1A], seq.val[com1B])) {
                     if (isZero(seq.val[com2A], seq.val[com2B])) {
                         // 0101  
-                        idx = 1;
+                        idx = 0;
                     }
                     else if (isOne(seq.val[com2A], seq.val[com2B])) {
                         // 0110
