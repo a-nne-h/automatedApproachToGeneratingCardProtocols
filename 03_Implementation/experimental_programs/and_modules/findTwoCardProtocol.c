@@ -1153,10 +1153,12 @@ struct turnStates applyTurn(struct state s) {
 * finds the index of a given sequence (as an array) within a state.
 */
 unsigned  int findIndex(struct sequence seq) {
+
     unsigned int index = nondet_uint();
+
     assume(index < NUMBER_POSSIBLE_SEQUENCES);
     for (int j = 0; j < N; j++) {
-        assume(seq.val[j] != emptyState.seq[index].val[j]);
+        assume(seq.val[j] == emptyState.seq[index].val[j]);
     }
     return index;
 }
@@ -1166,18 +1168,18 @@ unsigned  int findIndex(struct sequence seq) {
 * if found, copy the probabilities/possibilities from seq to result.states[resultIdx] and return new result
 */
 struct protocolStates copyResults(struct sequence seq, struct protocolStates result, unsigned int resultIdx) {
-    //find index of sequence within state that matches endSequence
+    //find index of sequence within state that matches endSequencea
     unsigned int index = findIndex(seq);
+
     // copy the probabilities/possibilities from seq to result.states[resultIdx] (! add the values -> cr shuffle)
     for (unsigned int j = 0; j < NUMBER_PROBABILITIES; j++) {
         struct fraction prob = seq.probs.frac[j];
         // Copy numerator.
-        if (prob.num != 0) {
-            result.states[resultIdx].seq[index].probs.frac[j].num = prob.num;
-        }
+        result.states[resultIdx].seq[index].probs.frac[j].num += prob.num;
+
         if (!WEAK_SECURITY) { // Probabilistic security
             // Copy denominator.
-            result.states[resultIdx].seq[index].probs.frac[j].den = prob.den;
+            result.states[resultIdx].seq[index].probs.frac[j].den += prob.den;
         }
     }
     return result;
@@ -1197,7 +1199,7 @@ struct protocolStates doProtocols(unsigned int protocolChosen, struct state s, u
                 if (isZero(seq.val[com1A], seq.val[com1B])) {
                     if (isZero(seq.val[com2A], seq.val[com2B])) {
                         // 0101  
-                        idx = 0;
+                        idx = 1;
                     }
                     else if (isOne(seq.val[com2A], seq.val[com2B])) {
                         // 0110
@@ -1215,6 +1217,7 @@ struct protocolStates doProtocols(unsigned int protocolChosen, struct state s, u
                     }
                 }
                 
+                
                 seq.val[com1A] = protocolTable[protocolChosen][i][idx][0];
                 unsigned int asdf = seq.val[com1A];
                 seq.val[com1B] = protocolTable[protocolChosen][i][idx][1];
@@ -1223,6 +1226,7 @@ struct protocolStates doProtocols(unsigned int protocolChosen, struct state s, u
                 asdf = seq.val[com2A];
                 seq.val[com2B] = protocolTable[protocolChosen][i][idx][3];
                 asdf = seq.val[com2B];
+              
                 // if we have one (or more) helper card
                 if (protocolChosen == FR_AND || protocolChosen == FR_COPY
                     || protocolChosen == LV_AND || protocolChosen == LV_OR) {
@@ -1232,11 +1236,14 @@ struct protocolStates doProtocols(unsigned int protocolChosen, struct state s, u
                         seq.val[help2] = protocolTable[protocolChosen][i][idx][5];
                     }
                 }
+               
                 result = copyResults(seq, result, i);
+              
                 result.isUsed[i] = 1;
             }
         }
     }
+ 
     for (unsigned int l = 0; l < MAX_PROTOCOL_ENDSTATES; l++) {
         assume(isBottomFree(result.states[l]));
     }

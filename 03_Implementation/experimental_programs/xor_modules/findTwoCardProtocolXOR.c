@@ -1164,7 +1164,7 @@ unsigned  int findIndex(struct sequence seq) {
     unsigned int index = nondet_uint();
     assume(index < NUMBER_POSSIBLE_SEQUENCES);
     for (int j = 0; j < N; j++) {
-        assume(seq.val[j] != emptyState.seq[index].val[j]);
+        assume(seq.val[j] == emptyState.seq[index].val[j]);
     }
     return index;
 }
@@ -1180,12 +1180,11 @@ struct protocolStates copyResults(struct sequence seq, struct protocolStates res
     for (unsigned int j = 0; j < NUMBER_PROBABILITIES; j++) {
         struct fraction prob = seq.probs.frac[j];
         // Copy numerator.
-        if (prob.num != 0) {
-            result.states[resultIdx].seq[index].probs.frac[j].num = prob.num;
-        }
+        result.states[resultIdx].seq[index].probs.frac[j].num += prob.num;
+        
         if (!WEAK_SECURITY) { // Probabilistic security
             // Copy denominator.
-            result.states[resultIdx].seq[index].probs.frac[j].den = prob.den;
+            result.states[resultIdx].seq[index].probs.frac[j].den += prob.den;
         }
     }
     return result;
