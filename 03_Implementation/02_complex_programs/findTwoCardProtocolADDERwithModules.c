@@ -16,8 +16,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
-#include"modules.c"
-
 unsigned int nondet_uint();
 void __CPROVER_assume(int x);
 void __CPROVER_assert(int x, char y[]);
@@ -857,6 +855,9 @@ struct fractions recalculatePossibilities(struct fractions probs,
     }
     return resProbs;
 }
+
+#include"modules.c"
+
 
 /**
  * Calculate the state after a shuffle operation starting from s with the given permutation set.
