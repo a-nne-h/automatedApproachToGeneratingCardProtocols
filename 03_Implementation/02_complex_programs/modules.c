@@ -29,7 +29,7 @@ void __CPROVER_assert(int x, char y[]);
 * is used (0: not used, 1: used)
 */
 #ifndef USE_FR_AND
-#define USE_FR_AND 1
+#define USE_FR_AND 0
 #endif 
 
 /**
@@ -48,7 +48,7 @@ void __CPROVER_assert(int x, char y[]);
 * is used (0: not used, 1: used)
 */
 #ifndef USE_FR_XOR
-#define USE_FR_XOR 1
+#define USE_FR_XOR 0
 #endif 
 
 /**
@@ -85,7 +85,7 @@ void __CPROVER_assert(int x, char y[]);
 * is used (0: not used, 1: used)
 */
 #ifndef USE_LV_OR
-#define USE_LV_OR 0
+#define USE_LV_OR 1
 #endif 
 
 /**
@@ -103,7 +103,7 @@ void __CPROVER_assert(int x, char y[]);
 * is used(0: not used, 1 : used)
 */
 #ifndef USE_FR_COPY
-#define USE_FR_COPY 0
+#define USE_FR_COPY 1
 #endif 
 
 /**
@@ -121,7 +121,7 @@ void __CPROVER_assert(int x, char y[]);
 * therefore the struct PROTOCOL_TABLE should have PROTOCOL_TABLE[5][MAX_PROTOCOL_ENDSTATES][4][6]
 * and the FR_AND_TABLE & co schould be FR_AND_TABLE[MAX_PROTOCOL_ENDSTATES][4]
 */
-    unsigned int VAL_111222[6] = { 1,1,1,2,2,2 };
+unsigned int VAL_111222[6] = { 1,1,1,2,2,2 };
 unsigned int VAL_112122[6] = { 1,1,2,1,2,2 };
 unsigned int VAL_112212[6] = { 1,1,2,2,1,2 };
 unsigned int VAL_112221[6] = { 1,1,2,2,2,1 };
@@ -162,7 +162,7 @@ unsigned int VAL_PLACEHOLDER[6] = { 0,0,0,0,0,0 };
 unsigned int protocolTable[5][2][4][6] = { { { { 1,2,1,2,1,2 }, { 1,2,2,1,1,2 },{ 1,2,1,2,1,2 }, { 1,2,1,2,2,1 } }, { { 2,1,1,2,1,2 },{ 2,1,1,2,2,1 }, { 2,1,1,2,1,2 },  { 2,1,2,1,1,2 } } },
 { { { 1,2,1,2,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }, { 1,2,1,2,0,0 } }, {{ 2,1,2,1,0,0 }, { 1,2,2,1,0,0 }, { 1,2,2,1,0,0 }, { 2,1,2,1,0,0 }} },
 { { { 1,2,2,1,2,0 }, { 1,2,2,1,2,0 }, { 1,2,2,1,2,0 },  { 1,2,1,2,2,0 } }, { { 2,1,1,2,2,0 },  { 2,1,1,2,2,0 },  { 2,1,1,2,2,0 }, { 2,1,2,1,2,0 }} },
-{ { { 2,2,1,1,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 } }, {{ 2,1,2,1,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 } } },
+{ { { 2,2,1,1,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 }, { 1,2,1,2,0,0 } }, {{ 2,1,2,1,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }, { 2,1,1,2,0,0 }} },
 { { { 1,2,1,2,1,2 }, { 0,0,0,0,0,0 }, { 1,2,2,1,2,1 }, { 0,0,0,0,0,0 } }, { { 2,1,2,1,2,1 }, { 0,0,0,0,0,0 }, { 2,1,1,2,1,2 }, { 0,0,0,0,0,0 }} } };
 
 
@@ -269,16 +269,14 @@ struct protocolStates doProtocols(unsigned int protocolChosen, struct state s, u
 
                 // if we have one (or more) helper card
                 if (protocolChosen == FR_AND || protocolChosen == FR_COPY
-                    || protocolChosen == LV_AND || protocolChosen == LV_OR) {
+                    || protocolChosen == LV_AND) {
                     seq.val[help1] = protocolTable[protocolChosen][i][idx][4];
                     // if we have two helper cards
                     if (protocolChosen == FR_AND || protocolChosen == FR_COPY) {
                         seq.val[help2] = protocolTable[protocolChosen][i][idx][5];
                     }
                 }
-
                 result = copyResults(seq, result, i);
-
                 result.isUsed[i] = 1;
             }
         }
@@ -344,7 +342,7 @@ struct state applyProtocols(struct state s) {
         }
     }
     //protocols with five cards
-    if (protocolChosen == LV_AND || protocolChosen == LV_OR) {
+    if (protocolChosen == LV_AND) {
         help1 = nondet_uint();
         assume(help1 < N);
         assume(help1 != com1A && help1 != com1B && help1 != com2A && help1 != com2B);
@@ -355,10 +353,6 @@ struct state applyProtocols(struct state s) {
                 if (protocolChosen == LV_AND) {
                     // for LV_AND the helper card is 2
                     assume(s.seq[i].val[help1] == 2);
-                }
-                else if (protocolChosen == LV_OR) {
-                    // for LV_OR the helper card is 1
-                    assume(s.seq[i].val[help1] == 1);
                 }
             }
         }
