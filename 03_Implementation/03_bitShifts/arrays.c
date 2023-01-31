@@ -347,27 +347,6 @@ struct state applyShuffle(struct state s) {
     return res;
 }
 
-/**
-* This function performs a shuffle and afterwards checks for a specific property of the probabilities
-*/
-struct state tryPermutation(struct state s) {
-    struct state res = applyShuffle(s);
-
-    // check if every possibility is 1 after shuffle
-    for (int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
-        for (int j = 0; j < NUMBER_PROBABILITIES; j++) {
-            assume(res.seq[i].probs.frac[j].num != 0);
-        }
-    }
-    return s;
-}
-
-
-
-
-
-
-
 
 
 /**
@@ -504,6 +483,24 @@ struct narray getStartSequence() {
     return res;
 }
 
+/**
+* This function performs a shuffle and afterwards checks for a specific property of the probabilities
+* in this test it is, whether all probabilities in all possible sequences have a value that is not equal to 0
+* a correct result needs at least 6 permutations
+* therefore the problem is complicated enough to ensure some level of complexity while keeping the code simple
+* For other tests, this function can be easiy altered
+*/
+struct state tryPermutation(struct state s) {
+    struct state res = applyShuffle(s);
+
+    // check if every possibility is 1 after shuffle
+    for (int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+        for (int j = 0; j < NUMBER_PROBABILITIES; j++) {
+            assume(res.seq[i].probs.frac[j].num != 0);
+        }
+    }
+    return s;
+}
 
 int main() {
 
@@ -549,7 +546,6 @@ int main() {
     stateWithAllPermutations = getStateWithAllPermutations();
 
     tryPermutation(startState);
-    //tryPermutations ()
     assert(0);
     return 0;
 }
