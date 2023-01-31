@@ -265,7 +265,7 @@ unsigned int getSequenceIndexFromArray(char compare, struct state compareState) 
     unsigned int seqIdx = nondet_uint();
     assume(seqIdx < NUMBER_POSSIBLE_SEQUENCES);
     struct sequence seq = compareState.seq[seqIdx];
-    assume((seq.val ^ compare)); // the chars are equal if XOR is 0 
+    assume(!(seq.val ^ compare)); // the chars are equal if XOR is 0 
     return seqIdx;
     
 }
@@ -389,19 +389,6 @@ struct state applyShuffle(struct state s) {
     struct state res = doShuffle(s, permutationSet, permSetSize);
     //assert(permSetSize == 1);
     return res;
-}
-
-struct state tryPermutation(struct state s) {
-    struct state res = applyShuffle(s);
-   
-
-    // check if every possibility is 1 after shuffle
-    for (int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
-        for (int j = 0; j < NUMBER_PROBABILITIES; j++) {
-            assume(res.seq[i].probs.frac[j].num != 0);
-        }
-    }
-    return s;
 }
 
 
@@ -542,6 +529,25 @@ char getStartSequence() {
 
 
 
+/**
+* This function performs a shuffle and afterwards checks for a specific property of the probabilities
+* in this test it is, whether all probabilities in all possible sequences have a value that is not equal to 0
+* a correct result needs at least 6 permutations
+* therefore the problem is complicated enough to ensure some level of complexity while keeping the code simple
+* For other tests, this function can be easiy altered
+*/
+struct state tryPermutation(struct state s) {
+    struct state res = applyShuffle(s);
+
+
+    // check if every possibility is 1 after shuffle
+    for (int i = 0; i < NUMBER_POSSIBLE_SEQUENCES; i++) {
+        for (int j = 0; j < NUMBER_PROBABILITIES; j++) {
+            assume(res.seq[i].probs.frac[j].num != 0);
+        }
+    }
+    return s;
+}
 
 int main() {
     emptyState = getEmptyState();
@@ -567,19 +573,23 @@ int main() {
         arrSeqIdx[i] = getSequenceIndexFromArray(start[i], startState);
     }
 
-    for (unsigned int i = 0; i < (NUMBER_START_SEQS - 1); i++) {
-        startState.seq[arrSeqIdx[i]].probs.frac[0].num = 1;
+    if (WEAK_SECURITY == 2) {
+        for (unsigned int i = 0; i < (NUMBER_START_SEQS - 1); i++) {
+            startState.seq[arrSeqIdx[i]].probs.frac[0].num = 1;
+        }
+        unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
+        unsigned int arrIdx = arrSeqIdx[lastStartSeq];
+        unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
+        startState.seq[arrIdx].probs.frac[lastProbIdx].num = isOneOne(start[lastStartSeq]);
     }
-
-    unsigned int lastStartSeq = NUMBER_START_SEQS - 1;
-    unsigned int arrIdx = arrSeqIdx[lastStartSeq];
-    unsigned int lastProbIdx = NUMBER_PROBABILITIES - 1;
-    startState.seq[arrIdx].probs.frac[lastProbIdx].num = isOneOne(start[lastStartSeq]);
-
+    else {
+        for (unsigned int i = 0; i < (NUMBER_START_SEQS); i++) {
+            startState.seq[arrSeqIdx[i]].probs.frac[i].num = 1;
+        }
+    }
 
 
     stateWithAllPermutations = getStateWithAllPermutations();
-    //assert(0);
     tryPermutation(startState);
     assert(0);
     return 0;
