@@ -85,7 +85,7 @@ void __CPROVER_assert(int x, char y[]);
 * is used (0: not used, 1: used)
 */
 #ifndef USE_LV_OR
-#define USE_LV_OR 1
+#define USE_LV_OR 0
 #endif 
 
 /**
@@ -103,7 +103,7 @@ void __CPROVER_assert(int x, char y[]);
 * is used(0: not used, 1 : used)
 */
 #ifndef USE_FR_COPY
-#define USE_FR_COPY 1
+#define USE_FR_COPY 0
 #endif 
 
 /**
@@ -208,7 +208,7 @@ unsigned  int findIndex(struct sequence seq) {
 * if found, copy the probabilities/possibilities from seq to result.states[resultIdx] and return new result
 */
 struct protocolStates copyResults(struct sequence seq, struct protocolStates result, unsigned int resultIdx) {
-    //find index of sequence within state that matches endSequencea
+    //find index of sequence within state that matches endSequence
     unsigned int index = findIndex(seq);
 
     // copy the probabilities/possibilities from seq to result.states[resultIdx] (! add the values -> cr shuffle)
@@ -259,13 +259,9 @@ struct protocolStates doProtocols(unsigned int protocolChosen, struct state s, u
 
 
                 seq.val[com1A] = protocolTable[protocolChosen][i][idx][0];
-                unsigned int asdf = seq.val[com1A];
                 seq.val[com1B] = protocolTable[protocolChosen][i][idx][1];
-                asdf = seq.val[com1B];
                 seq.val[com2A] = protocolTable[protocolChosen][i][idx][2];
-                asdf = seq.val[com2A];
                 seq.val[com2B] = protocolTable[protocolChosen][i][idx][3];
-                asdf = seq.val[com2B];
 
                 // if we have one (or more) helper card
                 if (protocolChosen == FR_AND || protocolChosen == FR_COPY
