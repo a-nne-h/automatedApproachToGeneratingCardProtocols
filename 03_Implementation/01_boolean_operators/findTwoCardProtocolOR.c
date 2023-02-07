@@ -120,7 +120,7 @@ void __CPROVER_assert(int x, char y[]);
  * If set to 1, only closed protocols with closed shuffles will be searched.
  */
 #ifndef CLOSED_PROTOCOL
-#define CLOSED_PROTOCOL 0
+#define CLOSED_PROTOCOL 1
 #endif
 
 /**
