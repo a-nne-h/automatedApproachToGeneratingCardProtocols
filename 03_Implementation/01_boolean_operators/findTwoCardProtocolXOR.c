@@ -53,26 +53,54 @@ void __CPROVER_assert(int x, char y[]);
 #define L 5
 #endif
 
-/**
- * Amount of different action types allowed in protocol, excluding result action.
+
+ /**
+ * MODULES:
+ * More than one operation
  */
-#ifndef A
-#define A 2
+
+ /**
+ * determines whether the Modules are used or not
+ * 0: no modules only turns and shuffles
+ * 1: modules are used
+ */
+#ifndef MODULES
+#define MODULES 1
 #endif
 
-/**
- * Number assigned to turn action.
+
+ /**
+ * Amount of different action types allowed in protocol, excluding result action.
  */
+#if MODULES == 0
+#define A 2
+#else
+#define A 3
+#endif
+
+ /**
+  * Number assigned to turn action.
+  */
 #ifndef TURN
 #define TURN 0
 #endif
 
-/**
- * Number assigned to shuffle action.
- */
+  /**
+   * Number assigned to shuffle action.
+   */
 #ifndef SHUFFLE
 #define SHUFFLE 1
 #endif
+
+   /**
+   * Number assigned to protocol execution action.
+   */
+#ifndef PROTOCOL
+#define PROTOCOL 2
+#endif
+
+
+
 
 /**
  * Regarding possibilities for a sequence, we (only) consider
@@ -754,6 +782,9 @@ struct fractions recalculatePossibilities(struct fractions probs,
     return resProbs;
 }
 
+#include"modules.c"
+
+
 /**
  * Calculate the state after a shuffle operation starting from s with the given permutation set.
  */
@@ -980,6 +1011,7 @@ struct turnStates applyTurn(struct state s) {
     return result;
 }
 
+
 /**
  * Apply L nondeterministic actions (excluding the result action).
  * The function evaluates to true if:
@@ -999,9 +1031,14 @@ unsigned int performActions(struct state s) {
     for (unsigned int i = 0; i < L; i++) {
         // Choose the action nondeterministically.
         unsigned int action = nondet_uint();
-        assume (action < A);
+        assume(action < A);
         // If A is greater than 2, we must add cases for additional actions below.
-        assume (A == 2);
+        if (MODULES == 0) {
+            assume(A == 2);
+        }
+        else {
+            assume(A == 3);
+        }
         unsigned int next = i + 1;
 
         if (action == TURN) {
@@ -1018,40 +1055,52 @@ unsigned int performActions(struct state s) {
             * from the trace that the program gives us for one branch
             */
             unsigned int stateIdx = nondet_uint();
-            assume (stateIdx < MAX_TURN_OBSERVATIONS);
-            assume (possiblePostStates.isUsed[stateIdx]);
+            assume(stateIdx < MAX_TURN_OBSERVATIONS);
+            assume(possiblePostStates.isUsed[stateIdx]);
             reachableStates[next] = possiblePostStates.states[stateIdx];
             if (!FINITE_RUNTIME) { // Restart-free Las-Vegas.
                 if (isFinalState(reachableStates[next])) {
-                    assume (next == L);
+                    assume(next == L);
                     result = 1;
                 }
-            } else {
+            }
+            else {
                 unsigned int isFinalTurn = 1;
                 for (unsigned int j = 0; j < MAX_TURN_OBSERVATIONS; j++) {
-                    if (    possiblePostStates.isUsed[j]
+                    if (possiblePostStates.isUsed[j]
                         && !isFinalState(possiblePostStates.states[j])) {
                         isFinalTurn = 0;
                     }
                 }
                 if (isFinalTurn) {
-                    assume (next == L);
+                    assume(next == L);
                     result = 1;
                 }
             }
-        } else if (action == SHUFFLE) {
+        }
+        else if (action == SHUFFLE) {
             /**
              * Apply a nondet shuffle and store the result in
              * the reachableStates array.
              */
             reachableStates[next] = applyShuffle(reachableStates[i]);
             if (isFinalState(reachableStates[next])) {
-                assume (next == L);
+                assume(next == L);
                 result = 1;
             }
-        } else {
+        }
+        else if (action == PROTOCOL) {
+            reachableStates[next] = applyProtocols(reachableStates[i]);
+
+            // only for not Final Runtime
+            if (isFinalState(reachableStates[next])) {
+                assume(next == L);
+                result = 1;
+            }
+        }
+        else {
             // No valid action was chosen. This must not happen.
-            assume (next == L);
+            assume(next == L);
         }
     }
     return result;

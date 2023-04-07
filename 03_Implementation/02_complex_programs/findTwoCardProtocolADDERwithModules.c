@@ -1247,6 +1247,14 @@ int main() {
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
         start[i] = getStartSequence();
     }
+
+    //make sure help cards are the same
+    for (int j = 1; j < NUMBER_START_SEQS; j++) {
+        for (int k = COMMIT; k < N; k++) {
+            assume(start[j].arr[k] == start[j - 1].arr[k]);
+        }
+    }
+
     assume(isZeroZero(start[0].arr));
 
     assume(NUMBER_START_SEQS == 4);
@@ -1257,6 +1265,7 @@ int main() {
     assume(start[0].arr[2] == start[2].arr[2]);
     assume(start[0].arr[2] != start[1].arr[2]);
     assume(start[1].arr[2] == start[3].arr[2]);
+
 
     unsigned int arrSeqIdx[NUMBER_START_SEQS];
     for (unsigned int i = 0; i < NUMBER_START_SEQS; i++) {
